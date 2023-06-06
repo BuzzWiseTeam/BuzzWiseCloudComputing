@@ -1,0 +1,32 @@
+{
+  "name": "buzzwisebackend",
+  "version": "1.0.0",
+  "description": "Buzz Wise App Backend Services",
+  "main": "server.js",
+  "scripts": {
+    "test": "nodemon node ./src/server.js",
+    "start": "node ./src/server.js",
+    "dev": "nodemon ./src/server.js"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "author": "Billy Franscois",
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/storage": "^6.10.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.1.4",
+    "express": "^4.18.2",
+    "firebase-admin": "^11.9.0",
+    "firebase-auth": "^0.1.2",
+    "formidable-serverless": "^1.1.1",
+    "uuid-v4": "^0.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.42.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "nodemon": "^2.0.22"
+  }
+}
