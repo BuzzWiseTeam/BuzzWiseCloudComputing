@@ -17,7 +17,10 @@ const addJob = async (req, res) => {
     try {
         form.parse(req, async (error, fields, files) => {
             const uuid = UUID();
-            const storagePublicURL = 'https://firebasestorage.googleapis.com/v0/b/buzz-wise-team.appspot.com/o/';
+
+            const bucketName = 'buzz-wise-team';
+
+            const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
 
             const { companyProfileImage } = files;
 
@@ -34,7 +37,7 @@ const addJob = async (req, res) => {
                 });
             }
 
-            const bucket = storage.bucket('gs://buzz-wise-team.appspot.com');
+            const bucket = storage.bucket(`gs://${bucketName}.appspot.com`);
 
             if (companyProfileImage.size === 0) {
                 // Do nothing
