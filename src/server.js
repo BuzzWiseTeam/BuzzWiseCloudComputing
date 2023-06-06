@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-app.use('/', JobRoutes.routes);
+app.use('/api/jobs', JobRoutes.routes);
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
