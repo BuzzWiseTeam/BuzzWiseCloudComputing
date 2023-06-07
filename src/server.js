@@ -6,6 +6,7 @@ const JobRoutes = require('./routes/jobRoutes');
 require('dotenv').config();
 
 const app = express();
+const hostname = '0.0.0.0';
 const port = process.env.PORT || 8080;
 
 app.use(express.json({ limit: '50mb', extended: true }));
@@ -17,6 +18,6 @@ app.use(cors());
 
 app.use('/api/jobs', JobRoutes.routes);
 
-app.listen(port, () => {
+app.listen(port, hostname, () => {
     console.log(`Listening on port ${port}`);
 });
