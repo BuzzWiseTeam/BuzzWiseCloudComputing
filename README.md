@@ -17,3 +17,5 @@
 <h3>Google Cloud Service</h3>
 
 Make sure to put `serviceAccountKey.json` in the root directory.
+
+- Cloud Run update service: `gcloud run services update buzzwiseapi --port 8080`
