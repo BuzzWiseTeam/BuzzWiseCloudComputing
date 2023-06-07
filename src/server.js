@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const app = express();
 const hostname = process.env.NODE_ENV !== 'production' ? 'localhost' : '0.0.0.0';
-const port = process.env.PORT || 1908;
+const port = process.env.PORT || 8080;
 
 app.use(express.json({ limit: '50mb', extended: true }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));

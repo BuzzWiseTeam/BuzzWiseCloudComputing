@@ -15,7 +15,9 @@ COPY ./ .
 # Add app source code
 # ADD . /usr/src/app
 
-EXPOSE 1908
+# EXPOSE 8080
+
+ENV PORT 8080
 
 # ENTRYPOINT npm run start
 CMD ["npm", "start"]
