@@ -1,4 +1,4 @@
-ARG NODE_VERSION=18
+ARG NODE_VERSION=lts
 FROM node:${NODE_VERSION}-alpine
 
 RUN mkdir -p /usr/src/app
