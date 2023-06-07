@@ -1,5 +1,7 @@
-ARG NODE_VERSION=18
+ARG NODE_VERSION=lts
 FROM node:${NODE_VERSION}-alpine
+
+# FROM gcr.io/cloud-builders/gcloud
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
@@ -15,9 +17,9 @@ COPY ./ .
 # Add app source code
 # ADD . /usr/src/app
 
-# EXPOSE 8080
+EXPOSE 8080
 
-ENV $PORT 8080
+ENV PORT 8080
 
 # ENTRYPOINT npm run start
 CMD ["npm", "start"]
