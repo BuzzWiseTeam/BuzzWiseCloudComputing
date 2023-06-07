@@ -19,4 +19,4 @@
 
 Make sure to put `serviceAccountKey.json` in the root directory.
 
-- Cloud Run update service: `gcloud run services update buzzwiseapi --port 8080`
+- Cloud Run update service: `gcloud run services update buzzwisebackend --port 8080`
