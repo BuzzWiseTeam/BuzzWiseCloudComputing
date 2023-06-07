@@ -17,7 +17,7 @@ COPY ./ .
 
 # EXPOSE 8080
 
-ENV PORT 8080
+ENV $PORT 8080
 
 # ENTRYPOINT npm run start
 CMD ["npm", "start"]
