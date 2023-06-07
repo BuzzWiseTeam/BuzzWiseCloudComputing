@@ -1,4 +1,4 @@
-ARG NODE_VERSION=lts
+ARG NODE_VERSION=18
 FROM node:${NODE_VERSION}-alpine
 
 RUN mkdir -p /usr/src/app
@@ -15,7 +15,7 @@ COPY ./ .
 # Add app source code
 # ADD . /usr/src/app
 
-EXPOSE 80
+EXPOSE 8080
 
 # ENTRYPOINT npm run start
 CMD ["npm", "start"]
