@@ -1,7 +1,7 @@
 {
   "name": "buzzwisebackend",
   "version": "1.0.0",
-  "description": "Buzz Wise App Backend Services",
+  "description": "Buzz Wise App Back-End Services",
   "main": "server.js",
   "scripts": {
     "test": "nodemon node ./src/server.js",
