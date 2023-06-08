@@ -98,7 +98,7 @@ const getAllJobs = async (req, res) => {
             const jobsData = value.docs.map((document) => document.data());
 
             res.status(200).send({
-                message: 'All Job Listings',
+                message: 'Display All Job Listings',
                 data: jobsData,
                 error: false
             });
@@ -118,7 +118,7 @@ const getJob = async (req, res) => {
             const jobData = value.docs.map((document) => document.data());
 
             res.status(200).send({
-                message: 'Job Data',
+                message: 'Display a Job Data',
                 data: jobData,
                 error: false
             });
@@ -137,7 +137,7 @@ const deleteJob = async (req, res) => {
         await jobsCollection.doc(req.params.id).delete();
 
         res.status(200).send({
-            message: 'Delete Job Data',
+            message: 'Delete Job Successfully',
             data: {},
             error: false
         });
