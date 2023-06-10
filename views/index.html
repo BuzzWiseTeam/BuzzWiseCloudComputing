@@ -1,56 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" href="../assets/BuzzWiseProfile.png" type="image/x-icon">
+
     <title>REST API | Buzz Wise</title>
+
     <style>
-        @import url(https://fonts.googleapis.com/css2?family=Montserrat&display=swap);code,pre{background-color:#f1f1f1}*{box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:Montserrat,sans-serif;font-size:14px;line-height:1.5rem}.container{width:800px;margin:80px auto}hr{border:none;height:2px;background-color:#4658c6;margin:20px 0}a{color:#000;text-decoration:none}a:hover{font-weight:700}code,h3::before,p a{color:#4658c6}h3::before{content:"#";display:inline-block;margin-right:5px;position:relative}code{padding:2px}pre{border-radius:5px;overflow:auto}.response{background-color:transparent}@media screen and (max-width:600px){.container{width:100%;padding:0 20px}}
+        @import url(https://fonts.googleapis.com/css2?family=Montserrat&display=swap);
+
+        code,
+        pre {
+            background-color: #f1f1f1
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: Montserrat, sans-serif;
+            font-size: 14px;
+            line-height: 1.5rem
+        }
+
+        .container {
+            width: 800px;
+            margin: 80px auto
+        }
+
+        hr {
+            border: none;
+            height: 2px;
+            background-color: #4658c6;
+            margin: 20px 0
+        }
+
+        a {
+            color: #000;
+            text-decoration: none
+        }
+
+        a:hover {
+            font-weight: 700
+        }
+
+        code,
+        h3::before,
+        p a {
+            color: #4658c6
+        }
+
+        h3::before {
+            content: "#";
+            display: inline-block;
+            margin-right: 5px;
+            position: relative
+        }
+
+        code {
+            padding: 2px
+        }
+
+        pre {
+            border-radius: 5px;
+            overflow: auto
+        }
+
+        .response {
+            background-color: transparent
+        }
+
+        @media screen and (max-width:600px) {
+            .container {
+                width: 100%;
+                padding: 0 20px
+            }
+        }
     </style>
 </head>
+
 <body>
-<section class="container">
-    <h1>Buzz Wise App</h1>
-    <hr>
-    <h2 id="endpoint"><a href="#endpoint">Endpoint</a></h2>
-    <p><a href="https://buzzwisebackend-fu5dz3fuxq-uc.a.run.app">https://buzzwisebackend-fu5dz3fuxq-uc.a.run.app</a></p>
-    <!-- Add Job -->
-    <h3 id="add-job"><a href="#add-job">Add Job</a></h3>
-    <ul>
-        <li>
-            URL
-            <ul>
-                <li>
-                    <code>/api/jobs/addJob</code>
-                </li>
-            </ul>
-        </li>
-        <li>
-            Method
-            <ul>
-                <li>POST</li>
-            </ul>
-        </li>
-        <li>
-            Request Body
-            <ul>
-                <li><code>title</code> as <code>text</code></li>
-                <li><code>companyName</code> as <code>text</code></li>
-                <li><code>location</code> as <code>text</code></li>
-                <li><code>email</code> as <code>text</code></li>
-                <li><code>jobType</code> as <code>text</code></li>
-                <li><code>requiredSkill</code> as <code>text</code></li>
-                <li><code>jobDescription</code> as <code>text</code></li>
-                <li><code>companyProfileImage</code> as <code>file</code></li>
-            </ul>
-        </li>
-        <li>
-            Response
-        <pre>
+    <section class="container">
+        <h1>Buzz Wise App</h1>
+        <hr>
+        <h2 id="endpoint"><a href="#endpoint">Endpoint</a></h2>
+        <p><a href="https://buzzwisebackend-fu5dz3fuxq-uc.a.run.app">https://buzzwisebackend-fu5dz3fuxq-uc.a.run.app</a>
+        </p>
+        <!-- Add Job -->
+        <h3 id="add-job"><a href="#add-job">Add Job</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/jobs/addJob</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>POST</li>
+                </ul>
+            </li>
+            <li>
+                Request Body
+                <ul>
+                    <li><code>title</code> as <code>text</code></li>
+                    <li><code>companyName</code> as <code>text</code></li>
+                    <li><code>location</code> as <code>text</code></li>
+                    <li><code>email</code> as <code>text</code></li>
+                    <li><code>jobType</code> as <code>text</code></li>
+                    <li><code>requiredSkill</code> as <code>text</code></li>
+                    <li><code>jobDescription</code> as <code>text</code></li>
+                    <li><code>companyProfileImage</code> as <code>file</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
         <code class="response">
     {
-        "message": "Job created succesfully",
+        "message": "Successfully Added a Job",
         "data": {
             "id": "yNuNFkdGjZP2NgN1",
             "title": "AC Service",
@@ -59,42 +139,45 @@
             "email": "servicecenter@samsung.id",
             "jobType: "Full-time",
             "requiredSkill: "AC Repair",
-            "jobDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit."
-        }
+            "jobDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+            "createdAt": "6/9/2023|11:17:50 AM",
+            "companyProfileImage": "URL"
+        },
+        "error": false
     }
         </code>
         </pre>
-        </li>
-    </ul>
-    <!-- Display All Jobs -->
-    <h3 id="all-jobs"><a href="#all-jobs">Display All Jobs</a></h3>
-    <ul>
-        <li>
-            URL
-            <ul>
-                <li>
-                    <code>/api/jobs/allJobs</code>
-                </li>
-            </ul>
-        </li>
-        <li>
-            Method
-            <ul>
-                <li>GET</li>
-            </ul>
-        </li>
-        <li>
-            Response
-        <pre>
+            </li>
+        </ul>
+        <!-- Display All Jobs -->
+        <h3 id="all-jobs"><a href="#all-jobs">Display All Jobs</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/jobs/allJobs</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>GET</li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
         <code class="response">
     {
         "message": "Display All Job Listings",
         "data": [
             {
-                "companyProfileImage": "https://firebasestorage.googleapis.com/v0/b/buzz-wise-team.appspot.com/o/jobs%2FBillyBlue.png?alt=media&token=80d9d865-1132-48db-8d55-66c5b3ecd869",
-                "dateAndTime": "6/7/2023|3:13:17 PM",
+                "createdAt": "6/7/2023|3:13:17 PM",
+                "companyProfileImage": "URL",
                 "companyName": "Samsung Service Center",
-                "jobDescription": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+                "jobDescription": "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
                 "location": "Jakarta, Indonesia",
                 "requiredSkill": "AC Repair",
                 "id": "4mWPCWQmDkU4nczUFgrc",
@@ -108,58 +191,71 @@
     }
         </code>
         </pre>
-        </li>
-    </ul>
-    <!-- Display a Job -->
-    <h3 id="job"><a href="#job">Display a Job</a></h3>
-    <ul>
-        <li>
-            URL
-            <ul>
-                <li>
-                    <code>/api/jobs/job/id</code>
-                </li>
-            </ul>
-        </li>
-        <li>
-            Method
-            <ul>
-                <li>GET</li>
-            </ul>
-        </li>
-        <li>
-            Response
-        <pre>
+            </li>
+        </ul>
+        <!-- Display a Job -->
+        <h3 id="job"><a href="#job">Display a Job</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/jobs/job/:id</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>GET</li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
         <code class="response">
     {
         "message": "Display a Job Data",
-        "data": [],
+        "data": [
+            {
+                "createdAt": "6/9/2023|11:17:50 AM",
+                "companyProfileImage": "URL",
+                "companyName": "Samsung Service Center",
+                "jobDescription": "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+                "location": "Jakarta, Indonesia",
+                "requiredSkill": "AC Repair, Troubleshooting",
+                "id": "oGbB1tZ9XQ2JHH6vHwDI",
+                "jobType": "Full-Time",
+                "title": "AC Service",
+                "email": "servicecenter@samsung.id"
+           }
+        ],
         "error": false
     }
         </code>
         </pre>
-        </li>
-    </ul>
-    <!-- Delete Job -->
-    <h3 id="delete"><a href="#delete">Delete Job</a></h3>
-    <ul>
-        <li>
-            URL
-            <ul>
-                <li>
-                    <code>/api/jobs/deleteJob/id</code>
-                </li>
-            </ul>
-        </li>
-        <li>
-            Method
-            <ul>
-                <li>DELETE</li>
-            </ul>
-        </li>
-        <li>
-            Response
-        <pre>
+            </li>
+        </ul>
+        <!-- Delete Job -->
+        <h3 id="delete"><a href="#delete">Delete Job</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/jobs/deleteJob/:id</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>DELETE</li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
         <code class="response">
     {
         "message": "Delete Job Successfully",
@@ -168,8 +264,9 @@
     }
         </code>
         </pre>
-        </li>
-    </ul>
-</section>
+            </li>
+        </ul>
+    </section>
 </body>
+
 </html>
