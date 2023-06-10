@@ -72,7 +72,7 @@ const addJob = async (req, res) => {
                 requiredSkill: fields.requiredSkill,
                 jobDescription: fields.jobDescription,
                 companyProfileImage: companyProfileImage.size === 0 ? '' : imageURL,
-                dateAndTime: getDateAndTime
+                createdAt: getDateAndTime
             };
 
             await jobsCollection.doc(documentID).set(jobData, { merge: true }).then(() => {
