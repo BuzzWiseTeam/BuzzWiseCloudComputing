@@ -76,7 +76,7 @@ const addJob = async (req, res) => {
             };
 
             await jobsCollection.doc(documentID).set(jobData, { merge: true }).then(() => {
-                res.status(200).send({
+                res.status(201).send({
                     message: 'Successfully Added a Job',
                     data: jobData,
                     error: false,
