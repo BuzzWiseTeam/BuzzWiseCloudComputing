@@ -87,7 +87,7 @@ const addJob = async (req, res) => {
         res.status(400).send({
             message: 'Something went wrong to create a job!',
             data: {},
-            error,
+            error: error.message
         });
     }
 };
@@ -107,7 +107,7 @@ const getAllJobs = async (req, res) => {
         res.status(400).send({
             message: 'Something went wrong to get all jobs!',
             data: {},
-            error,
+            error: error.message
         });
     }
 };
@@ -127,7 +127,7 @@ const getJob = async (req, res) => {
         res.status(400).send({
             message: 'Something went wrong to get a job!',
             data: {},
-            error,
+            error: error.message
         });
     }
 };
@@ -145,7 +145,7 @@ const deleteJob = async (req, res) => {
         res.status(400).send({
             message: 'Something went wrong to delete a job!',
             data: {},
-            error,
+            error: error.message
         });
     }
 };
