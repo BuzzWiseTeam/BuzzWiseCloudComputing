@@ -32,8 +32,7 @@ const addJob = async (req, res) => {
             if (error) {
                 return res.status(400).json({
                     message: 'There was an error parsing the files!',
-                    data: {},
-                    error,
+                    error: error.errorMessage
                 });
             }
 
@@ -75,19 +74,18 @@ const addJob = async (req, res) => {
                 createdAt: getDateAndTime
             };
 
+            // Added to the firestore collection
             await jobsCollection.doc(documentID).set(jobData, { merge: true }).then(() => {
                 res.status(201).send({
                     message: 'Successfully Added a Job',
-                    data: jobData,
-                    error: false,
+                    data: jobData
                 });
             });
         });
     } catch (error) {
         res.status(400).send({
             message: 'Something went wrong to create a job!',
-            data: {},
-            error: error.message
+            error: error.errorMessage
         });
     }
 };
@@ -99,15 +97,13 @@ const getAllJobs = async (req, res) => {
 
             res.status(200).send({
                 message: 'Display All Job Listings',
-                data: jobsData,
-                error: false
+                data: jobsData
             });
         });
     } catch (error) {
         res.status(400).send({
             message: 'Something went wrong to get all jobs!',
-            data: {},
-            error: error.message
+            error: error.errorMessage
         });
     }
 };
@@ -119,15 +115,13 @@ const getJob = async (req, res) => {
 
             res.status(200).send({
                 message: 'Display a Job Data',
-                data: jobData,
-                error: false
+                data: jobData
             });
         });
     } catch (error) {
         res.status(400).send({
             message: 'Something went wrong to get a job!',
-            data: {},
-            error: error.message
+            error: error.errorMessage
         });
     }
 };
@@ -137,15 +131,12 @@ const deleteJob = async (req, res) => {
         await jobsCollection.doc(req.params.id).delete();
 
         res.status(200).send({
-            message: 'Delete Job Successfully',
-            data: {},
-            error: false
+            message: 'Delete Job Successfully'
         });
     } catch (error) {
         res.status(400).send({
             message: 'Something went wrong to delete a job!',
-            data: {},
-            error: error.message
+            error: error.errorMessage
         });
     }
 };
