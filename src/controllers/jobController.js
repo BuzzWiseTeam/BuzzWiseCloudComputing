@@ -68,7 +68,7 @@ const addJob = async (req, res) => {
                 location: fields.location,
                 email: fields.email,
                 jobType: fields.jobType,
-                requiredSkill: fields.requiredSkill,
+                requiredSkills: fields.requiredSkills,
                 jobDescription: fields.jobDescription,
                 companyProfileImage: companyProfileImage.size === 0 ? '' : imageURL,
                 createdAt: getDateAndTime
