@@ -130,7 +130,7 @@ const deleteJob = async (req, res) => {
     try {
         await jobsCollection.doc(req.params.id).delete();
 
-        res.status(200).send({
+        res.status(202).send({
             message: 'Delete Job Successfully'
         });
     } catch (error) {
