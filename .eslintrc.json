@@ -23,6 +23,7 @@
         "no-else-return": "off",
         "eol-last": "off",
         "consistent-return": "off",
-        "prefer-template":"off"
+        "prefer-template":"off",
+        "object-property-newline": "off"
     }
 }
