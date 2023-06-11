@@ -22,8 +22,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.1.4",
     "express": "^4.18.2",
+    "firebase": "^7.24.0",
     "firebase-admin": "^11.9.0",
-    "firebase-auth": "^0.1.2",
     "formidable-serverless": "^1.1.1",
     "uuid-v4": "^0.1.0"
   },
