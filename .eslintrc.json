@@ -24,6 +24,7 @@
         "eol-last": "off",
         "consistent-return": "off",
         "prefer-template":"off",
-        "object-property-newline": "off"
+        "object-property-newline": "off",
+        "array-callback-return": "off"
     }
 }
