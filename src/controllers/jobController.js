@@ -2,7 +2,7 @@ const { Storage } = require('@google-cloud/storage');
 const UUID = require('uuid-v4');
 const formidable = require('formidable-serverless');
 
-const FirebaseDatabase = require('../config/database');
+const FirebaseDatabase = require('../database');
 
 const jobsCollection = FirebaseDatabase.firestore().collection('jobs');
 
