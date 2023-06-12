@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 const JobRoutes = require('./routes/jobRoutes');
+const UserRoutes = require('./routes/userRoutes');
 
 require('dotenv').config();
 
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use('/api/jobs', JobRoutes.routes);
+app.use('/api/users', UserRoutes.routes);
 
 app.listen(port, hostname, () => {
     console.log(`Listening on ${hostname}:${port}`);
