@@ -114,6 +114,23 @@ const getAllJobs = async (req, res) => {
 
 const getJob = async (req, res) => {
     try {
+        const jobId = req.params.id;
+        const jobs = await jobsCollection.doc(jobId);
+        const job = await jobs.get();
+
+        if (!job.exists)
+        {
+            res.status(404).send({
+                message: 'Cannot Found Job!'
+            });
+        } else {
+            res.status(200).send({
+                message: 'Display a Job',
+                data: job.data()
+            });
+        }
+
+        /* Using list
         await jobsCollection.where('id', '==', req.params.id).get().then((value) => {
             const jobData = value.docs.map((document) => document.data());
 
@@ -122,6 +139,7 @@ const getJob = async (req, res) => {
                 data: jobData
             });
         });
+        */
     } catch (error) {
         res.status(400).send({
             message: 'Something went wrong to Display a Job!',
