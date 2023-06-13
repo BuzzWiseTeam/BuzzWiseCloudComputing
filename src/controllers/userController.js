@@ -312,7 +312,7 @@ const updateUserAccountProfile = async (req, res) => {
         const form = new formidable.IncomingForm({ multiples: true });
 
         form.parse(req, async (error, fields, files) => {
-            const { uid } = user;
+            const userId = user.uid;
 
             const bucketName = 'buzz-wise-team';
 
@@ -343,7 +343,7 @@ const updateUserAccountProfile = async (req, res) => {
                     resumable: true,
                     metadata: {
                         metadata: {
-                            firebaseStorageDownloadTokens: uid
+                            firebaseStorageDownloadTokens: userId
                         }
                     }
                 });
@@ -366,7 +366,7 @@ const updateUserAccountProfile = async (req, res) => {
             };
 
             // Added to the firestore collection
-            await usersCollection.doc(uid).update(profileData, { merge: true })
+            await usersCollection.doc(userId).update(profileData, { merge: true })
                 .then(() => {
                     user.updateProfile({
                         displayName: profileData.name,
@@ -394,7 +394,7 @@ const updateUserProfile = async (req, res) => {
         const form = new formidable.IncomingForm({ multiples: true });
 
         form.parse(req, async (error, fields, files) => {
-            const uid = req.params.id;
+            const userId = req.params.id;
 
             const bucketName = 'buzz-wise-team';
 
@@ -425,7 +425,7 @@ const updateUserProfile = async (req, res) => {
                     resumable: true,
                     metadata: {
                         metadata: {
-                            firebaseStorageDownloadTokens: uid
+                            firebaseStorageDownloadTokens: userId
                         }
                     }
                 });
@@ -448,7 +448,7 @@ const updateUserProfile = async (req, res) => {
             };
 
             // Added to the firestore collection
-            await usersCollection.doc(uid).update(profileData, { merge: true })
+            await usersCollection.doc(userId).update(profileData, { merge: true })
                 .then(() => {
                     const user = firebase.auth().currentUser;
 
@@ -479,7 +479,7 @@ const editUserProfile = async (req, res) => {
         const form = new formidable.IncomingForm({ multiples: true });
 
         form.parse(req, async (error, fields, files) => {
-            const { uid } = user;
+            const userId = user.uid;
 
             const bucketName = 'buzz-wise-team';
 
@@ -510,7 +510,7 @@ const editUserProfile = async (req, res) => {
                     resumable: true,
                     metadata: {
                         metadata: {
-                            firebaseStorageDownloadTokens: uid
+                            firebaseStorageDownloadTokens: userId
                         }
                     }
                 });
@@ -528,7 +528,7 @@ const editUserProfile = async (req, res) => {
             };
 
             // Added to the firestore collection
-            await usersCollection.doc(uid).update(profileData, { merge: true })
+            await usersCollection.doc(userId).update(profileData, { merge: true })
                 .then(() => {
                     user.updateProfile({
                         displayName: profileData.name,
@@ -557,7 +557,7 @@ const editUserInformation = async (req, res) => {
         const form = new formidable.IncomingForm({ multiples: true });
 
         form.parse(req, async (error, fields) => {
-            const { uid } = user;
+            const userId = user.uid;
 
             if (error) {
                 return res.status(400).json({
@@ -576,7 +576,7 @@ const editUserInformation = async (req, res) => {
             };
 
             // Added to the firestore collection
-            await usersCollection.doc(uid).update(profileData, { merge: true })
+            await usersCollection.doc(userId).update(profileData, { merge: true })
                 .then(() => {
                     user.updateProfile({
                         displayName: profileData.name,
