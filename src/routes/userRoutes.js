@@ -1,6 +1,7 @@
 const express = require('express');
 const { signUp, signIn, logOut, verifyUserEmail, forgetUserPassword, deleteUserAccount,
-    getAllUsersAccountProfiles, getUserAccountProfile, getCurrentUserAccountProfile, updateUserAccountProfile, updateUserProfile, deleteUserAccountProfile } = require('../controllers/userController');
+    getAllUsersAccountProfiles, getUserAccountProfile, getCurrentUserAccountProfile, updateUserAccountProfile, updateUserProfile, deleteUserAccountProfile,
+    editUserProfile, editUserInformation } = require('../controllers/userController');
 
 const router = express.Router();
 
@@ -15,6 +16,8 @@ router.get('/userProfile', getCurrentUserAccountProfile);
 router.get('/userProfile/:id', getUserAccountProfile);
 router.put('/updateUserAccountProfile', updateUserAccountProfile);
 router.put('/updateUserProfile/:id', updateUserProfile);
+router.put('/editUserProfile', editUserProfile);
+router.put('/editUserInformation', editUserInformation);
 router.delete('/deleteUserProfile/:id', deleteUserAccountProfile);
 
 module.exports = { routes: router };

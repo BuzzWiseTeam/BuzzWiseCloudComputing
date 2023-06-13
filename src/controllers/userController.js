@@ -40,12 +40,13 @@ const signUp = async (req, res) => {
                 usersCollection.doc(credential.user.uid).set({
                     id: credential.user.uid,
                     name: req.body.name,
+                    headline: req.body.headline || null,
                     email: credential.user.email,
                     location: req.body.location || null,
-                    status: ['Available', 'Unavailable'],
+                    status: 'Available',
                     skills: req.body.skill || null,
                     userProfileImage: req.body.photo || null,
-                    profileDescription: req.body.profileDescription || null,
+                    about: req.body.about || null,
                     createdAt: getDateAndTime
                 });
             })
@@ -57,7 +58,6 @@ const signUp = async (req, res) => {
                 });
             })
             .then((data) => res.status(201)
-
                 .send({
                     message: 'User Account Signed Up Successfully',
                     data
@@ -123,9 +123,15 @@ const logOut = async (req, res) => {
 
         if (user) {
             await firebase.auth().signOut().then(() => {
-                console.log('User Signed Out Successfully!');
+                res.status(200).send({
+                    message: 'User log out successfully',
+                    status: 'Success'
+                });
             }).catch((error) => {
-                console.log('Something Went Wrong to Sign Out a User Account!', error.message);
+                res.status(404).send({
+                    message: 'Something Went Wrong to Log Out a User Account!',
+                    error: error.message
+                });
             });
         } else {
             res.status(403).send({
@@ -135,7 +141,7 @@ const logOut = async (req, res) => {
         }
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Sign Out a User Account!',
+            message: 'Something Went Wrong to Log Out a User Account!',
             error: error.message
         });
     }
@@ -226,11 +232,12 @@ const getAllUsersAccountProfiles = async (req, res) => {
                     id: doc.data().id,
                     name: doc.data().name,
                     email: doc.data().email,
+                    headline: doc.data().headline,
                     location: doc.data().location,
                     status: doc.data().status,
                     skills: doc.data().skills,
                     userProfileImage: doc.data().userProfileImage,
-                    profileDescription: doc.data().profileDescription,
+                    about: doc.data().about,
                     createdAt: doc.data().createdAt
                 };
 
@@ -239,7 +246,7 @@ const getAllUsersAccountProfiles = async (req, res) => {
 
             return response;
         });
-        
+
         res.status(200).send({
             message: 'Display All User Profile',
             data: response
@@ -336,9 +343,9 @@ const updateUserAccountProfile = async (req, res) => {
                     resumable: true,
                     metadata: {
                         metadata: {
-                            firebaseStorageDownloadTokens: uuid,
-                        },
-                    },
+                            firebaseStorageDownloadTokens: uuid
+                        }
+                    }
                 });
 
                 // Profile image url
@@ -350,20 +357,28 @@ const updateUserAccountProfile = async (req, res) => {
             // Object to send to the database
             const profileData = {
                 name: fields.name,
+                headline: fields.headline,
                 location: fields.location,
                 skills: fields.skills,
                 status: fields.status,
                 userProfileImage: userProfileImage.size === 0 ? '' : imageURL,
-                profileDescription: fields.profileDescription,
+                about: fields.about
             };
 
             // Added to the firestore collection
-            await usersCollection.doc(uuid).update(profileData, { merge: true }).then(() => {
-                res.status(202).send({
-                    message: 'Successfully Update a User Profile',
-                    data: profileData
+            await usersCollection.doc(uuid).update(profileData, { merge: true })
+                .then(() => {
+                    user.updateProfile({
+                        displayName: profileData.name,
+                        photoURL: profileData.userProfileImage
+                    });
+                })
+                .then(() => {
+                    res.status(202).send({
+                        message: 'Successfully Update a User Profile',
+                        data: profileData
+                    });
                 });
-            });
         });
     } catch (error) {
         res.status(400).send({
@@ -373,14 +388,14 @@ const updateUserAccountProfile = async (req, res) => {
     }
 };
 
-// Delete the user's account profile by id
+// Update the user's account profile by id
 const updateUserProfile = async (req, res) => {
     try {
         const form = new formidable.IncomingForm({ multiples: true });
 
         form.parse(req, async (error, fields, files) => {
             const uid = req.params.id;
-            
+
             const bucketName = 'buzz-wise-team';
 
             const storagePublicURL = `https://storage.googleapis.com/${bucketName}.appspot.com/`;
@@ -410,9 +425,9 @@ const updateUserProfile = async (req, res) => {
                     resumable: true,
                     metadata: {
                         metadata: {
-                            firebaseStorageDownloadTokens: uid,
-                        },
-                    },
+                            firebaseStorageDownloadTokens: uid
+                        }
+                    }
                 });
 
                 // Profile image url
@@ -424,20 +439,156 @@ const updateUserProfile = async (req, res) => {
             // Object to send to the database
             const profileData = {
                 name: fields.name,
+                headline: fields.headline,
                 location: fields.location,
                 skills: fields.skills,
                 status: fields.status,
                 userProfileImage: userProfileImage.size === 0 ? '' : imageURL,
-                profileDescription: fields.profileDescription,
+                about: fields.about
             };
 
             // Added to the firestore collection
-            await usersCollection.doc(uid).update(profileData, { merge: true }).then(() => {
-                res.status(202).send({
-                    message: 'Successfully Update a User Profile',
-                    data: profileData
+            await usersCollection.doc(uid).update(profileData, { merge: true })
+                .then(() => {
+                    const user = firebase.auth().currentUser;
+
+                    user.updateProfile({
+                        displayName: profileData.name,
+                        photoURL: profileData.userProfileImage
+                    });
+                })
+                .then(() => {
+                    res.status(202).send({
+                        message: 'Successfully Update a User Profile',
+                        data: profileData
+                    });
                 });
-            });
+        });
+    } catch (error) {
+        res.status(400).send({
+            message: 'Something went wrong to Update a User Profile!',
+            error: error.message
+        });
+    }
+};
+
+const editUserProfile = async (req, res) => {
+    try {
+        const user = firebase.auth().currentUser;
+
+        const form = new formidable.IncomingForm({ multiples: true });
+
+        form.parse(req, async (error, fields, files) => {
+            const uuid = user.uid;
+
+            const bucketName = 'buzz-wise-team';
+
+            const storagePublicURL = `https://storage.googleapis.com/${bucketName}.appspot.com/`;
+
+            // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
+
+            const { userProfileImage } = files;
+
+            // URL of the uploaded image
+            let imageURL;
+
+            if (error) {
+                return res.status(400).json({
+                    message: 'There was an error parsing the files!',
+                    error: error.errorMessage
+                });
+            }
+
+            const bucket = storage.bucket(`gs://${bucketName}.appspot.com`);
+
+            if (userProfileImage.size === 0) {
+                // Do nothing
+                res.send('No user profile image');
+            } else {
+                const imageResponse = await bucket.upload(userProfileImage.path, {
+                    destination: `users/${userProfileImage.name}`,
+                    resumable: true,
+                    metadata: {
+                        metadata: {
+                            firebaseStorageDownloadTokens: uuid
+                        }
+                    }
+                });
+
+                // Profile image url
+                // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uuid}`;
+
+                imageURL = storagePublicURL + imageResponse[0].name;
+            }
+
+            // Object to send to the database
+            const profileData = {
+                name: fields.name,
+                userProfileImage: userProfileImage.size === 0 ? '' : imageURL
+            };
+
+            // Added to the firestore collection
+            await usersCollection.doc(uuid).update(profileData, { merge: true })
+                .then(() => {
+                    user.updateProfile({
+                        displayName: profileData.name,
+                        photoURL: profileData.userProfileImage
+                    });
+                })
+                .then(() => {
+                    res.status(202).send({
+                        message: 'Successfully Update a User Profile',
+                        data: profileData
+                    });
+                });
+        });
+    } catch (error) {
+        res.status(400).send({
+            message: 'Something went wrong to Update a User Profile!',
+            error: error.message
+        });
+    }
+};
+
+const editUserInformation = async (req, res) => {
+    try {
+        const user = firebase.auth().currentUser;
+
+        const form = new formidable.IncomingForm({ multiples: true });
+
+        form.parse(req, async (error, fields) => {
+            const { uid } = user;
+
+            if (error) {
+                return res.status(400).json({
+                    message: 'There was an error parsing the files!',
+                    error: error.errorMessage
+                });
+            }
+
+            // Object to send to the database
+            const profileData = {
+                headline: fields.headline,
+                skills: fields.skills,
+                location: fields.location,
+                status: fields.status,
+                about: fields.about
+            };
+
+            // Added to the firestore collection
+            await usersCollection.doc(uid).update(profileData, { merge: true })
+                .then(() => {
+                    user.updateProfile({
+                        displayName: profileData.name,
+                        photoURL: profileData.userProfileImage
+                    });
+                })
+                .then(() => {
+                    res.status(202).send({
+                        message: 'Successfully Update a User Profile',
+                        data: profileData
+                    });
+                });
         });
     } catch (error) {
         res.status(400).send({
@@ -465,5 +616,6 @@ const deleteUserAccountProfile = async (req, res) => {
 
 module.exports = {
     signUp, signIn, logOut, verifyUserEmail, forgetUserPassword, deleteUserAccount,
-    getAllUsersAccountProfiles, getUserAccountProfile, getCurrentUserAccountProfile, updateUserAccountProfile, updateUserProfile, deleteUserAccountProfile
+    getAllUsersAccountProfiles, getUserAccountProfile, getCurrentUserAccountProfile, updateUserAccountProfile, updateUserProfile,
+    editUserProfile, editUserInformation, deleteUserAccountProfile
 };
