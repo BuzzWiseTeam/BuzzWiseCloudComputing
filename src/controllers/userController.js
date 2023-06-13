@@ -31,6 +31,8 @@ const signUp = async (req, res) => {
             });
         }
 
+        const defaultUserProfile = 'https://storage.googleapis.com/buzz-wise-team.appspot.com/users/DefaultProfile.png';
+
         await firebase.auth().createUserWithEmailAndPassword(req.body.email, req.body.password)
             .then((credential) => {
                 const date = new Date();
@@ -45,7 +47,7 @@ const signUp = async (req, res) => {
                     location: req.body.location || null,
                     status: 'Available',
                     skills: req.body.skill || null,
-                    userProfileImage: req.body.photo || null,
+                    userProfileImage: defaultUserProfile,
                     about: req.body.about || null,
                     createdAt: getDateAndTime
                 });
@@ -54,7 +56,8 @@ const signUp = async (req, res) => {
                 const user = firebase.auth().currentUser;
 
                 user.updateProfile({
-                    displayName: req.body.name
+                    displayName: req.body.name,
+                    imageURL: defaultUserProfile
                 });
             })
             .then((data) => res.status(201)
@@ -287,7 +290,7 @@ const getUserAccountProfile = async (req, res) => {
         const profile = await user.get();
 
         if (!profile.exists) {
-            res.status(400).send({
+            res.status(404).send({
                 message: 'Cannot Found User!',
             });
         } else {
