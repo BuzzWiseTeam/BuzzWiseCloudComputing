@@ -312,7 +312,7 @@ const updateUserAccountProfile = async (req, res) => {
         const form = new formidable.IncomingForm({ multiples: true });
 
         form.parse(req, async (error, fields, files) => {
-            const uuid = user.uid;
+            const { uid } = user;
 
             const bucketName = 'buzz-wise-team';
 
@@ -328,7 +328,7 @@ const updateUserAccountProfile = async (req, res) => {
             if (error) {
                 return res.status(400).json({
                     message: 'There was an error parsing the files!',
-                    error: error.errorMessage
+                    error: error.message
                 });
             }
 
@@ -343,13 +343,13 @@ const updateUserAccountProfile = async (req, res) => {
                     resumable: true,
                     metadata: {
                         metadata: {
-                            firebaseStorageDownloadTokens: uuid
+                            firebaseStorageDownloadTokens: uid
                         }
                     }
                 });
 
                 // Profile image url
-                // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uuid}`;
+                // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uid}`;
 
                 imageURL = storagePublicURL + imageResponse[0].name;
             }
@@ -366,7 +366,7 @@ const updateUserAccountProfile = async (req, res) => {
             };
 
             // Added to the firestore collection
-            await usersCollection.doc(uuid).update(profileData, { merge: true })
+            await usersCollection.doc(uid).update(profileData, { merge: true })
                 .then(() => {
                     user.updateProfile({
                         displayName: profileData.name,
@@ -410,7 +410,7 @@ const updateUserProfile = async (req, res) => {
             if (error) {
                 return res.status(400).json({
                     message: 'There was an error parsing the files!',
-                    error: error.errorMessage
+                    error: error.message
                 });
             }
 
@@ -479,7 +479,7 @@ const editUserProfile = async (req, res) => {
         const form = new formidable.IncomingForm({ multiples: true });
 
         form.parse(req, async (error, fields, files) => {
-            const uuid = user.uid;
+            const { uid } = user;
 
             const bucketName = 'buzz-wise-team';
 
@@ -495,7 +495,7 @@ const editUserProfile = async (req, res) => {
             if (error) {
                 return res.status(400).json({
                     message: 'There was an error parsing the files!',
-                    error: error.errorMessage
+                    error: error.message
                 });
             }
 
@@ -510,13 +510,13 @@ const editUserProfile = async (req, res) => {
                     resumable: true,
                     metadata: {
                         metadata: {
-                            firebaseStorageDownloadTokens: uuid
+                            firebaseStorageDownloadTokens: uid
                         }
                     }
                 });
 
                 // Profile image url
-                // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uuid}`;
+                // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uid}`;
 
                 imageURL = storagePublicURL + imageResponse[0].name;
             }
@@ -528,7 +528,7 @@ const editUserProfile = async (req, res) => {
             };
 
             // Added to the firestore collection
-            await usersCollection.doc(uuid).update(profileData, { merge: true })
+            await usersCollection.doc(uid).update(profileData, { merge: true })
                 .then(() => {
                     user.updateProfile({
                         displayName: profileData.name,
@@ -562,7 +562,7 @@ const editUserInformation = async (req, res) => {
             if (error) {
                 return res.status(400).json({
                     message: 'There was an error parsing the files!',
-                    error: error.errorMessage
+                    error: error.message
                 });
             }
 
