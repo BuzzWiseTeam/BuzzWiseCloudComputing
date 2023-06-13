@@ -9,11 +9,11 @@
 
 <h3>Docker</h3> 
 
-- Docker build: `sudo docker build -t buzz-wise-api .`
-- Docker run container: `sudo docker run -it -p 8080:8080 --name=buzzwiseapi buzz-wise-api`
-- Docker start: `sudo docker start buzzwiseapi`
-- Docker Stop: `sudo docker stop buzzwiseapi`
-- Docker remove: `sudo docker rm buzzwiseapi`
+- Docker build: `sudo docker build -t buzz-wise-backend .`
+- Docker run container: `sudo docker run -it -p 8080:8080 --name=buzzwisebackend buzz-wise-backend`
+- Docker start: `sudo docker start buzzwisebackend`
+- Docker Stop: `sudo docker stop buzzwisebackend`
+- Docker remove: `sudo docker rm buzzwisebackend`
 
 <h3>Google Cloud Service</h3>
 

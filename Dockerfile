@@ -17,6 +17,8 @@ COPY ./ .
 # Add app source code
 # ADD . /usr/src/app
 
+ENV HOST 0.0.0.0
+
 EXPOSE 8080
 
 # ENV PORT 8080
