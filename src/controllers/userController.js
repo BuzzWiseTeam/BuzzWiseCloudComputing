@@ -127,7 +127,7 @@ const logOut = async (req, res) => {
         if (user) {
             await firebase.auth().signOut().then(() => {
                 res.status(200).send({
-                    message: 'User log out successfully',
+                    message: 'User Log Out Successfully',
                     status: 'Success'
                 });
             }).catch((error) => {
@@ -138,7 +138,7 @@ const logOut = async (req, res) => {
             });
         } else {
             res.status(403).send({
-                message: 'User is already logged out!',
+                message: 'User is already Log Out!',
                 status: 'Failure!'
             });
         }
