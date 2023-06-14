@@ -267,13 +267,20 @@ const getCurrentUserAccountProfile = async (req, res) => {
     try {
         const user = firebase.auth().currentUser;
 
-        await usersCollection.doc(user.uid).get()
-            .then((result) => {
-                res.status(200).send({
-                    message: 'Display a User Profile',
-                    data: result.data()
+        if (user) {
+            await usersCollection.doc(user.uid).get()
+                .then((result) => {
+                    res.status(200).send({
+                        message: 'Display a User Profile',
+                        data: result.data()
+                    });
                 });
+        } else {
+            res.status(403).send({
+                message: 'User is not Sign In!',
+                status: 'Failure!'
             });
+        }
     } catch (error) {
         res.status(400).send({
             message: 'Something went wrong to Display a User Profile!',
@@ -314,77 +321,84 @@ const updateUserAccountProfile = async (req, res) => {
 
         const form = new formidable.IncomingForm({ multiples: true });
 
-        await usersCollection.doc(user.uid).get().then(() => {
-            form.parse(req, async (error, fields, files) => {
-                const userId = user.uid;
+        if (user) {
+            await usersCollection.doc(user.uid).get().then(() => {
+                form.parse(req, async (error, fields, files) => {
+                    const userId = user.uid;
 
-                const bucketName = 'buzz-wise-team';
+                    const bucketName = 'buzz-wise-team';
 
-                const storagePublicURL = `https://storage.googleapis.com/${bucketName}.appspot.com/`;
+                    const storagePublicURL = `https://storage.googleapis.com/${bucketName}.appspot.com/`;
 
-                // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
+                    // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
 
-                const { userProfileImage } = files;
+                    const { userProfileImage } = files;
 
-                // URL of the uploaded image
-                let imageURL;
+                    // URL of the uploaded image
+                    let imageURL;
 
-                if (error) {
-                    return res.status(400).json({
-                        message: 'There was an error parsing the files!',
-                        error: error.message
-                    });
-                }
+                    if (error) {
+                        return res.status(400).json({
+                            message: 'There was an error parsing the files!',
+                            error: error.message
+                        });
+                    }
 
-                const bucket = storage.bucket(`gs://${bucketName}.appspot.com`);
+                    const bucket = storage.bucket(`gs://${bucketName}.appspot.com`);
 
-                if (userProfileImage.size === 0) {
-                    // Do nothing
-                    res.send('No user profile image');
-                } else {
-                    const imageResponse = await bucket.upload(userProfileImage.path, {
-                        destination: `users/${userProfileImage.name}`,
-                        resumable: true,
-                        metadata: {
+                    if (userProfileImage.size === 0) {
+                        // Do nothing
+                        res.send('No user profile image');
+                    } else {
+                        const imageResponse = await bucket.upload(userProfileImage.path, {
+                            destination: `users/${userProfileImage.name}`,
+                            resumable: true,
                             metadata: {
-                                firebaseStorageDownloadTokens: userId
+                                metadata: {
+                                    firebaseStorageDownloadTokens: userId
+                                }
                             }
-                        }
-                    });
-
-                    // Profile image url
-                    // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uid}`;
-
-                    imageURL = storagePublicURL + imageResponse[0].name;
-                }
-
-                // Object to send to the database
-                const profileData = {
-                    name: fields.name,
-                    headline: fields.headline,
-                    location: fields.location,
-                    skills: fields.skills,
-                    status: fields.status,
-                    userProfileImage: userProfileImage.size === 0 ? '' : imageURL,
-                    about: fields.about
-                };
-
-                // Added to the firestore collection
-                await usersCollection.doc(userId).update(profileData, { merge: true })
-                    .then(() => {
-                        user.updateProfile({
-                            displayName: profileData.name,
-                            photoURL: profileData.userProfileImage
                         });
-                    })
-                    .then(() => {
-                        res.status(202).send({
-                            message: 'Successfully Update a User Profile',
-                            data: profileData
+
+                        // Profile image url
+                        // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uid}`;
+
+                        imageURL = storagePublicURL + imageResponse[0].name;
+                    }
+
+                    // Object to send to the database
+                    const profileData = {
+                        name: fields.name,
+                        headline: fields.headline,
+                        location: fields.location,
+                        skills: fields.skills,
+                        status: fields.status,
+                        userProfileImage: userProfileImage.size === 0 ? '' : imageURL,
+                        about: fields.about
+                    };
+
+                    // Added to the firestore collection
+                    await usersCollection.doc(userId).update(profileData, { merge: true })
+                        .then(() => {
+                            user.updateProfile({
+                                displayName: profileData.name,
+                                photoURL: profileData.userProfileImage
+                            });
+                        })
+                        .then(() => {
+                            res.status(202).send({
+                                message: 'Successfully Update a User Profile',
+                                data: profileData
+                            });
                         });
-                    });
+                });
             });
-        });
+        } else {
+            res.status(403).send({
+                message: 'User is not Sign In!',
+                status: 'Failure!'
+            });
+        }
 
         /* Default implementation
         form.parse(req, async (error, fields, files) => {
@@ -555,72 +569,79 @@ const editUserProfile = async (req, res) => {
 
         const form = new formidable.IncomingForm({ multiples: true });
 
-        await usersCollection.doc(user.uid).get().then(() => {
-            form.parse(req, async (error, fields, files) => {
-                const userId = user.uid;
+        if (user) {
+            await usersCollection.doc(user.uid).get().then(() => {
+                form.parse(req, async (error, fields, files) => {
+                    const userId = user.uid;
 
-                const bucketName = 'buzz-wise-team';
+                    const bucketName = 'buzz-wise-team';
 
-                const storagePublicURL = `https://storage.googleapis.com/${bucketName}.appspot.com/`;
+                    const storagePublicURL = `https://storage.googleapis.com/${bucketName}.appspot.com/`;
 
-                // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
+                    // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
 
-                const { userProfileImage } = files;
+                    const { userProfileImage } = files;
 
-                // URL of the uploaded image
-                let imageURL;
+                    // URL of the uploaded image
+                    let imageURL;
 
-                if (error) {
-                    return res.status(400).json({
-                        message: 'There was an error parsing the files!',
-                        error: error.message
-                    });
-                }
+                    if (error) {
+                        return res.status(400).json({
+                            message: 'There was an error parsing the files!',
+                            error: error.message
+                        });
+                    }
 
-                const bucket = storage.bucket(`gs://${bucketName}.appspot.com`);
+                    const bucket = storage.bucket(`gs://${bucketName}.appspot.com`);
 
-                if (userProfileImage.size === 0) {
-                    // Do nothing
-                    res.send('No user profile image');
-                } else {
-                    const imageResponse = await bucket.upload(userProfileImage.path, {
-                        destination: `users/${userProfileImage.name}`,
-                        resumable: true,
-                        metadata: {
+                    if (userProfileImage.size === 0) {
+                        // Do nothing
+                        res.send('No user profile image');
+                    } else {
+                        const imageResponse = await bucket.upload(userProfileImage.path, {
+                            destination: `users/${userProfileImage.name}`,
+                            resumable: true,
                             metadata: {
-                                firebaseStorageDownloadTokens: userId
+                                metadata: {
+                                    firebaseStorageDownloadTokens: userId
+                                }
                             }
-                        }
-                    });
-
-                    // Profile image url
-                    // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uid}`;
-
-                    imageURL = storagePublicURL + imageResponse[0].name;
-                }
-
-                // Object to send to the database
-                const profileData = {
-                    name: fields.name,
-                    userProfileImage: userProfileImage.size === 0 ? '' : imageURL
-                };
-
-                // Added to the firestore collection
-                await usersCollection.doc(userId).update(profileData, { merge: true })
-                    .then(() => {
-                        user.updateProfile({
-                            displayName: profileData.name,
-                            photoURL: profileData.userProfileImage
                         });
-                    })
-                    .then(() => {
-                        res.status(202).send({
-                            message: 'Successfully Update a User Profile',
-                            data: profileData
+
+                        // Profile image url
+                        // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uid}`;
+
+                        imageURL = storagePublicURL + imageResponse[0].name;
+                    }
+
+                    // Object to send to the database
+                    const profileData = {
+                        name: fields.name,
+                        userProfileImage: userProfileImage.size === 0 ? '' : imageURL
+                    };
+
+                    // Added to the firestore collection
+                    await usersCollection.doc(userId).update(profileData, { merge: true })
+                        .then(() => {
+                            user.updateProfile({
+                                displayName: profileData.name,
+                                photoURL: profileData.userProfileImage
+                            });
+                        })
+                        .then(() => {
+                            res.status(202).send({
+                                message: 'Successfully Update a User Profile',
+                                data: profileData
+                            });
                         });
-                    });
+                });
             });
-        });
+        } else {
+            res.status(403).send({
+                message: 'User is not Sign In!',
+                status: 'Failure!'
+            });
+        }
 
         /* Default implementation
         form.parse(req, async (error, fields, files) => {
@@ -702,42 +723,49 @@ const editUserInformation = async (req, res) => {
 
         const form = new formidable.IncomingForm({ multiples: true });
 
-        await usersCollection.doc(user.uid).get().then(() => {
-            form.parse(req, async (error, fields) => {
-                const userId = user.uid;
+        if (user) {
+            await usersCollection.doc(user.uid).get().then(() => {
+                form.parse(req, async (error, fields) => {
+                    const userId = user.uid;
 
-                if (error) {
-                    return res.status(400).json({
-                        message: 'There was an error parsing the files!',
-                        error: error.message
-                    });
-                }
-
-                // Object to send to the database
-                const profileData = {
-                    headline: fields.headline,
-                    skills: fields.skills,
-                    location: fields.location,
-                    status: fields.status,
-                    about: fields.about
-                };
-
-                // Added to the firestore collection
-                await usersCollection.doc(userId).update(profileData, { merge: true })
-                    .then(() => {
-                        user.updateProfile({
-                            displayName: profileData.name,
-                            photoURL: profileData.userProfileImage
+                    if (error) {
+                        return res.status(400).json({
+                            message: 'There was an error parsing the files!',
+                            error: error.message
                         });
-                    })
-                    .then(() => {
-                        res.status(202).send({
-                            message: 'Successfully Update a User Profile',
-                            data: profileData
+                    }
+
+                    // Object to send to the database
+                    const profileData = {
+                        headline: fields.headline,
+                        skills: fields.skills,
+                        location: fields.location,
+                        status: fields.status,
+                        about: fields.about
+                    };
+
+                    // Added to the firestore collection
+                    await usersCollection.doc(userId).update(profileData, { merge: true })
+                        .then(() => {
+                            user.updateProfile({
+                                displayName: profileData.name,
+                                photoURL: profileData.userProfileImage
+                            });
+                        })
+                        .then(() => {
+                            res.status(202).send({
+                                message: 'Successfully Update a User Profile',
+                                data: profileData
+                            });
                         });
-                    });
+                });
             });
-        });
+        } else {
+            res.status(403).send({
+                message: 'User is not Sign In!',
+                status: 'Failure!'
+            });
+        }
 
         /* Default implementation
         const user = firebase.auth().currentUser;
