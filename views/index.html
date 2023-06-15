@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>REST API | Buzz Wise</title>
-
     <style>
         @import url(https://fonts.googleapis.com/css2?family=Montserrat&display=swap);
 
@@ -93,6 +91,7 @@
         <h2 id="endpoint"><a href="#endpoint">Endpoint</a></h2>
         <p><a href="https://buzzwisebackend-fu5dz3fuxq-uc.a.run.app">https://buzzwisebackend-fu5dz3fuxq-uc.a.run.app</a>
         </p>
+        <h2>Jobs</h2>
         <!-- Add Job -->
         <h3 id="add-job"><a href="#add-job">Add Job</a></h3>
         <ul>
@@ -254,6 +253,422 @@
         <code class="response">
     {
         "message": "Delete Job Successfully"
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+
+        <h2>Users</h2>
+        <!-- User Sign Up -->
+        <h3 id="sign-up"><a href="#sign-up">Sign Up</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/users/signUp</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>POST</li>
+                </ul>
+            </li>
+            <li>
+                Request Body
+                <ul>
+                    <li><code>name</code> as <code>text</code></li>
+                    <li><code>email</code> as <code>text</code>, must be unique</li>
+                    <li><code>password</code> as <code>text</code>, must be at least 6 characters</li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
+        <code class="response">
+    {
+        "message": "User Account Signed Up Successfully"
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+        <!-- Sign In -->
+        <h3 id="sign-in"><a href="#sign-in">Sign In</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/users/signIn</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>POST</li>
+                </ul>
+            </li>
+            <li>
+                Request Body
+                <ul>
+                    <li><code>email</code> as <code>text</code></li>
+                    <li><code>password</code> as <code>text</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
+        <code class="response">
+    {
+        "message": "User Account Signed In Successfully",
+        "data": {
+            "user": {
+                "uid": "zzBes2aFGEVJJipYDOixtmytH3Y2",
+                "displayName": "Billy Mobile",
+                "email": "billymobile19@gmail.com",
+                "emailVerified": false,
+            },
+            "operationType": "signIn"
+        }
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+        <!-- Sign Out -->
+        <h3 id="sign-out"><a href="#sign-out">Sign Out</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/users/logOut</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>DELETE</li>
+                </ul>
+            </li>
+            <li>
+                Header
+                <ul>
+                    <li><code>Authorization</code> : <code> Bearer &lt;token&gt;</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
+        <code class="response">
+    {
+        "message": "User Log Out Successfully",
+        "status": "Success"
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+        <!-- Email Verification -->
+        <h3 id="verification"><a href="#verification">Email Verification</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/users/verifyUserEmail</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>POST</li>
+                </ul>
+            </li>
+            <li>
+                Request Body
+                <ul>
+                    <li><code>email</code> as <code>text</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
+        <code class="response">
+    {
+        "message": "Verify User Account Email Successfully",
+        "status": "Email Verification Sent, Please check your inbox"
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+        <!-- Forgot User Password -->
+        <h3 id="forgot-pw"><a href="#forgot-pw">Forgot Password</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/users/forgetUserPassword</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>POST</li>
+                </ul>
+            </li>
+            <li>
+                Request Body
+                <ul>
+                    <li><code>email</code> as <code>text</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
+        <code class="response">
+    {
+        "message": "Forget User Password Successfully",
+        "status": "Password Reset Email Sent, Please check your inbox"
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+        <!-- Display All Users Account Profiles -->
+        <h3 id="display-users"><a href="#display-users">Display All Users</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/users/allUsersProfiles</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>GET</li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
+        <code class="response">
+    {
+        "message": "Display All User Profile",
+        "data": [
+            {
+                "id": "zzBes2aFGEVJJipYDOixtmytH3Y2",
+                "name": "Billy Mobile",
+                "email": "billymobile19@gmail.com",
+                "headline": null,
+                "location": null,
+                "status": "Available",
+                "skills": null,
+                "userProfileImage": "URL",
+                "about": null,
+                "createdAt": "6/15/2023|1:32:38 AM"
+            },
+            ...
+        ]
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+        <!-- Display a User Account Profile Authorization -->
+        <h3 id="display-user"><a href="#display-user">Display a User Account Profile</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/users/userProfile</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>POST</li>
+                </ul>
+            </li>
+            <li>
+                Header
+                <ul>
+                    <li><code>Authorization</code> : <code> Bearer &lt;token&gt;</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
+        <code class="response">
+    {
+        "message": "Verify User Account Email Successfully",
+        "status": "Email Verification Sent, Please check your inbox"
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+        <!-- Update User Account Profile -->
+        <h3 id="update-user"><a href="#update-user">Update User Account Profile</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/users/updateUserAccountProfile</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>PUT</li>
+                </ul>
+            </li>
+            <li>
+                Header
+                <ul>
+                    <li><code>Authorization</code> : <code> Bearer &lt;token&gt;</code></li>
+                </ul>
+            </li>
+            <li>
+                Request Body
+                <ul>
+                    <li><code>name</code> as <code>text</code></li>
+                    <li><code>headline</code> as <code>text</code></li>
+                    <li><code>location</code> as <code>text</code></li>
+                    <li><code>skills</code> as <code>text</code></li>
+                    <li><code>status</code> as <code>text</code></li>
+                    <li><code>about</code> as <code>text</code></li>
+                    <li><code>userProfileImage</code> as <code>file</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
+        <code class="response">
+    {
+        "message": "Successfully Update a User Profile",
+        "data": {
+            "name": "Billy",
+            "headline": "Nothing last forever",
+            "location": "Ambon, Indonesia",
+            "skills": "AC Repair, Troubleshooting",
+            "status": "Unavailable",
+            "userProfileImage": "URL",
+            "about": "Cras dapibus. Vivamus elementum semper nisi."
+        }
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+        <!-- Edit User Profile -->
+        <h3 id="edit-user"><a href="#edit-user">Edit User Profile</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/users/editUserProfile</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>PUT</li>
+                </ul>
+            </li>
+            <li>
+                Header
+                <ul>
+                    <li><code>Authorization</code> : <code> Bearer &lt;token&gt;</code></li>
+                </ul>
+            </li>
+            <li>
+                Request Body
+                <ul>
+                    <li><code>name</code> as <code>text</code></li>
+                    <li><code>userProfileImage</code> as <code>file</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
+        <code class="response">
+    {
+        "message": "Successfully Update a User Profile",
+        "data": {
+            "name": "Billy",
+            "userProfileImage": "URL"
+        }
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+        <!-- Edit User Profile -->
+        <h3 id="edit-user-info"><a href="#edit-user-info">Edit User Information</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/users/editUserInformation</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>PUT</li>
+                </ul>
+            </li>
+            <li>
+                Header
+                <ul>
+                    <li><code>Authorization</code> : <code> Bearer &lt;token&gt;</code></li>
+                </ul>
+            </li>
+            <li>
+                Request Body
+                <ul>
+                    <li><code>headline</code> as <code>text</code></li>
+                    <li><code>location</code> as <code>text</code></li>
+                    <li><code>skills</code> as <code>text</code></li>
+                    <li><code>status</code> as <code>text</code></li>
+                    <li><code>about</code> as <code>text</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre>
+        <code class="response">
+    {
+        "message": "Successfully Update a User Profile",
+        "data": {
+            "headline": "Nothing last forever",
+            "skills": "AC Repair, Troubleshooting",
+            "location": "Ambon, Indonesia",
+            "status": "Not Available",
+            "about": "Cras dapibus. Vivamus elementum semper nisi."
+        }
     }
         </code>
         </pre>
