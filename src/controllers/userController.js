@@ -57,7 +57,7 @@ const signUp = async (req, res) => {
 
                 user.updateProfile({
                     displayName: req.body.name,
-                    imageURL: defaultUserProfile
+                    photoURL: defaultUserProfile
                 });
             })
             .then((data) => res.status(201)
