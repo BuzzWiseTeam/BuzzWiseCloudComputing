@@ -1,4 +1,4 @@
-<h1 align="center">Buzz Wise Back-End<h1>
+<h1 align="center">Buzz Wise Cloud Computing<h1>
 
 <h2>Setup & Installation</h2>
 
