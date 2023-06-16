@@ -15,8 +15,6 @@
 - Docker Stop: `sudo docker stop buzzwisebackend`
 - Docker remove: `sudo docker rm buzzwisebackend`
 
-<h3>Google Cloud Service</h3>
-
-Make sure to put `serviceAccountKey.json` in the root directory.
+<h3>Google Cloud Platform (GCP) Services</h3>
 
 - Cloud Run update service: `gcloud run services update buzzwisebackend --port 8080`
