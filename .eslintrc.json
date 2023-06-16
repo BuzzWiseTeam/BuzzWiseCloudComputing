@@ -25,6 +25,7 @@
         "consistent-return": "off",
         "prefer-template":"off",
         "object-property-newline": "off",
-        "array-callback-return": "off"
+        "array-callback-return": "off",
+        "prefer-destructuring": "off"
     }
 }
