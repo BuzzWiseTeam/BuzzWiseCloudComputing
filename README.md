@@ -1,5 +1,13 @@
 <h1 align="center">Buzz Wise Cloud Computing<h1>
 
+<h2>Databases</h2>
+
+![Databases](https://github.com/BuzzWiseTeam/BuzzWiseCloudComputing/blob/main/assets/Databases.png)
+
+<h2>Back-End Services</h2>
+
+![Back-End](https://github.com/BuzzWiseTeam/BuzzWiseCloudComputing/blob/main/assets/Backend.png)
+
 <h2>Setup & Installation</h2>
 
 <h3>Node.js & NPM</h3>
