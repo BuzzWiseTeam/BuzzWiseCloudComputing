@@ -2,11 +2,11 @@
 
 <h2>Databases</h2>
 
-![Databases](https://github.com/BuzzWiseTeam/BuzzWiseCloudComputing/blob/main/assets/Databases.png)
+![Databases](https://github.com/BuzzWiseTeam/BuzzWiseCloudComputing/blob/main/public/images/Database.png)
 
 <h2>Back-End Services</h2>
 
-![Back-End](https://github.com/BuzzWiseTeam/BuzzWiseCloudComputing/blob/main/assets/Backend.png)
+![Back-End](https://github.com/BuzzWiseTeam/BuzzWiseCloudComputing/blob/main/public/images/Back-End.png)
 
 <h2>Setup & Installation</h2>
 
@@ -15,7 +15,7 @@
 - Install all of the dependencies: `npm install`
 - Run the project: `npm run dev | npm run start | npm run test`
 
-<h3>Docker</h3> 
+<h3>Docker</h3>
 
 - Docker build: `sudo docker build -t buzz-wise-backend .`
 - Docker run container: `sudo docker run -it -p 8080:8080 --name=buzzwisebackend buzz-wise-backend`

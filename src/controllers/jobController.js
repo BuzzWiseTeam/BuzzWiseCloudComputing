@@ -1,22 +1,33 @@
 const { Storage } = require('@google-cloud/storage');
-const UUID = require('uuid-v4');
+const { v4: uuidv4 } = require('uuid');
+
 const formidable = require('formidable-serverless');
 
-const FirebaseDatabase = require('../database');
+const firebaseAdmin = require('../config/firebaseAdmin');
+const JobModel = require('../models/jobModel');
 
-const jobsCollection = FirebaseDatabase.firestore().collection('jobs');
+const JobsCollection = firebaseAdmin.firestore().collection('jobs');
 
-const storage = new Storage({
+const CloudStorage = new Storage({
     projectId: 'buzz-wise-team',
-    keyFilename: 'serviceAccountKey.json',
+    keyFilename: 'serviceAccountKey.json'
 });
 
 const addJob = async (req, res) => {
     try {
         const form = new formidable.IncomingForm({ multiples: true });
 
+        // Default implementation
         form.parse(req, async (error, fields, files) => {
-            const id = UUID();
+            // Create validation of the fields and files
+            if (!fields.title || !fields.companyName || !fields.location || !fields.email || !fields.jobType || !fields.requiredSkills || !fields.jobDescription || !files.companyProfileImage) {
+                return res.status(400).json({
+                    message: 'Please Fill All Required Input Fields',
+                    status: 400
+                });
+            }
+
+            const id = uuidv4();
 
             const bucketName = 'buzz-wise-team';
 
@@ -24,28 +35,32 @@ const addJob = async (req, res) => {
 
             // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
 
-            const { companyProfileImage } = files;
+            // The variable should be match with the name of the key field
+            const companyProfileImage = files.companyProfileImage;
 
             // URL of the uploaded image
             let imageURL;
 
-            const documentID = jobsCollection.doc().id;
+            const jobID = JobsCollection.doc().id;
 
             if (error) {
                 return res.status(400).json({
-                    message: 'There was an error parsing the files!',
-                    error: error.errorMessage
+                    message: 'There Was an Error Parsing The Files',
+                    status: 400,
+                    error: error.message
                 });
             }
 
-            const bucket = storage.bucket(`gs://${bucketName}.appspot.com`);
+            const bucket = CloudStorage.bucket(`gs://${bucketName}.appspot.com`);
 
             if (companyProfileImage.size === 0) {
-                // Do nothing
-                res.send('No company profile image');
+                res.status(404).send({
+                    message: 'No Image Found',
+                    status: 404
+                });
             } else {
                 const imageResponse = await bucket.upload(companyProfileImage.path, {
-                    destination: `jobs/${companyProfileImage.name}`,
+                    destination: `jobs/${jobID}/${companyProfileImage.name}`,
                     resumable: true,
                     metadata: {
                         metadata: {
@@ -66,7 +81,7 @@ const addJob = async (req, res) => {
 
             // Object to send to the database
             const jobData = {
-                id: documentID,
+                id: jobID,
                 title: fields.title,
                 companyName: fields.companyName,
                 location: fields.location,
@@ -79,163 +94,200 @@ const addJob = async (req, res) => {
             };
 
             // Added to the firestore collection
-            await jobsCollection.doc(documentID).set(jobData, { merge: true }).then(() => {
+            await JobsCollection.doc(jobID).set(jobData, { merge: true }).then(() => {
                 res.status(201).send({
-                    message: 'Successfully Added a Job',
+                    message: 'Successfully Added Job',
+                    status: 201,
                     data: jobData
                 });
             });
         });
     } catch (error) {
         res.status(400).send({
-            message: 'Something went wrong to Added a Job!',
-            error: error.errorMessage
+            message: 'Something Went Wrong to Added Job',
+            status: 400,
+            error: error.message
         });
     }
 };
 
 const getAllJobs = async (req, res) => {
     try {
-        await jobsCollection.get().then((value) => {
-            const jobsData = value.docs.map((document) => document.data());
-
-            res.status(200).send({
-                message: 'Display All Job Listings',
-                data: jobsData
-            });
-        });
+        JobModel.getAllJobs(req, res, JobsCollection);
     } catch (error) {
         res.status(400).send({
-            message: 'Something went wrong to Display All Job Listings!',
-            error: error.errorMessage
+            message: 'Something Went Wrong to Display All Jobs Listing',
+            status: 400,
+            error: error.message
         });
     }
 };
 
-const getJob = async (req, res) => {
+const getJobDetail = async (req, res) => {
     try {
-        const jobId = req.params.id;
-        const jobs = await jobsCollection.doc(jobId);
-        const job = await jobs.get();
-
-        if (!job.exists)
-        {
-            res.status(404).send({
-                message: 'Cannot Found Job!'
-            });
-        } else {
-            res.status(200).send({
-                message: 'Display a Job',
-                data: job.data()
-            });
-        }
-
-        /* Using list
-        await jobsCollection.where('id', '==', req.params.id).get().then((value) => {
-            const jobData = value.docs.map((document) => document.data());
-
-            res.status(200).send({
-                message: 'Display a Job Data',
-                data: jobData
-            });
-        });
-        */
+        JobModel.getJobDetail(req, res, JobsCollection);
     } catch (error) {
         res.status(400).send({
-            message: 'Something went wrong to Display a Job!',
-            error: error.errorMessage
+            message: 'Something Went Wrong to Display Job Detail',
+            status: 400,
+            error: error.message
         });
     }
 };
 
+// Update job profile by id (Only for Testing)
 const updateJob = async (req, res) => {
     try {
+        const jobID = req.params.id;
+        const job = await JobsCollection.doc(jobID).get();
+
         const form = new formidable.IncomingForm({ multiples: true });
 
-        form.parse(req, async (error, fields, files) => {
-            const { id } = req.params;
+        if (!job.exists) {
+            res.status(404).send({
+                message: 'Job is Not Found',
+                status: 404
+            });
+        } else {
+            // Default implementation
+            form.parse(req, async (error, fields, files) => {
+                // Create validation of the fields and files
+                if (!fields.title || !fields.companyName || !fields.location || !fields.email || !fields.jobType || !fields.requiredSkills || !fields.jobDescription || !files.companyProfileImage) {
+                    return res.status(400).json({
+                        message: 'Please Fill All Required Input Fields',
+                        status: 400
+                    });
+                }
 
-            const bucketName = 'buzz-wise-team';
+                const bucketName = 'buzz-wise-team';
 
-            const storagePublicURL = `https://storage.googleapis.com/${bucketName}.appspot.com/`;
+                const storagePublicURL = `https://storage.googleapis.com/${bucketName}.appspot.com/`;
 
-            // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
+                // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
 
-            const { companyProfileImage } = files;
+                const companyProfileImage = files.companyProfileImage;
 
-            // URL of the uploaded image
-            let imageURL;
+                // URL of the uploaded image
+                let imageURL;
 
-            if (error) {
-                return res.status(400).json({
-                    message: 'There was an error parsing the files!',
-                    error: error.errorMessage
-                });
-            }
+                if (error) {
+                    return res.status(400).json({
+                        message: 'There Was an Error Parsing The Files',
+                        status: 400,
+                        error: error.message
+                    });
+                }
 
-            const bucket = storage.bucket(`gs://${bucketName}.appspot.com`);
+                const bucket = CloudStorage.bucket(`gs://${bucketName}.appspot.com`);
 
-            if (companyProfileImage.size === 0) {
-                // Do nothing
-                res.send('No company profile image');
-            } else {
-                const imageResponse = await bucket.upload(companyProfileImage.path, {
-                    destination: `jobs/${companyProfileImage.name}`,
-                    resumable: true,
-                    metadata: {
+                if (companyProfileImage.size === 0) {
+                    res.status(404).send({
+                        message: 'No Image Found',
+                        status: 404
+                    });
+                } else {
+                    const imageResponse = await bucket.upload(companyProfileImage.path, {
+                        destination: `jobs/${jobID}/${companyProfileImage.name}`,
+                        resumable: true,
                         metadata: {
-                            firebaseStorageDownloadTokens: id
+                            metadata: {
+                                firebaseStorageDownloadTokens: jobID
+                            }
                         }
-                    }
-                });
+                    });
 
-                // Profile image url
-                // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uuid}`;
+                    // Profile image url
+                    // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uuid}`;
 
-                imageURL = storagePublicURL + imageResponse[0].name;
-            }
+                    imageURL = storagePublicURL + imageResponse[0].name;
+                }
 
-            // Object to send to the database
-            const jobData = {
-                title: fields.title,
-                companyName: fields.companyName,
-                location: fields.location,
-                email: fields.email,
-                jobType: fields.jobType,
-                requiredSkills: fields.requiredSkills,
-                jobDescription: fields.jobDescription,
-                companyProfileImage: companyProfileImage.size === 0 ? '' : imageURL,
-            };
+                const date = new Date();
 
-            // Update to the firestore collection
-            await jobsCollection.doc(id).update(jobData, { merge: true }).then(() => {
-                res.status(202).send({
-                    message: 'Successfully Update a Job',
-                    data: jobData
+                const getDateAndTime = date.toLocaleDateString() + '|' + date.toLocaleTimeString();
+
+                // Object to send to the database
+                const jobData = {
+                    title: fields.title,
+                    companyName: fields.companyName,
+                    location: fields.location,
+                    email: fields.email,
+                    jobType: fields.jobType,
+                    requiredSkills: fields.requiredSkills,
+                    jobDescription: fields.jobDescription,
+                    companyProfileImage: companyProfileImage.size === 0 ? '' : imageURL,
+                    updatedAt: getDateAndTime
+                };
+
+                // Update to the firestore collection
+                await JobsCollection.doc(jobID).update(jobData, { merge: true }).then(() => {
+                    res.status(202).send({
+                        message: 'Update Job Successfully',
+                        status: 202,
+                        data: jobData
+                    });
                 });
             });
-        });
+        }
     } catch (error) {
         res.status(400).send({
-            message: 'Something went wrong to Update a Job!',
-            error: error.errorMessage
+            message: 'Something went wrong to Update Job',
+            status: 400,
+            error: error.message
         });
     }
 };
 
+const deleteJobProfileStorage = async (uid) => {
+    try {
+        const bucket = CloudStorage.bucket('buzz-wise-team.appspot.com');
+
+        // Delete the folder itself
+        bucket.deleteFiles({
+            prefix: `jobs/${uid}`
+        });
+
+        /*
+        // Delete files in the folder
+        bucket.deleteFiles({
+          prefix: filePath
+        });
+        */
+
+        // console.log('Folder deleted successfully.');
+    } catch (error) {
+        throw new Error('Error Deleting Folder: ', error);
+    }
+};
+
+// Delete job profile by id (Only for Testing)
 const deleteJob = async (req, res) => {
     try {
-        await jobsCollection.doc(req.params.id).delete();
+        const jobID = req.params.id;
+        const job = await JobsCollection.doc(jobID).get();
 
-        res.status(202).send({
-            message: 'Delete Job Successfully'
-        });
+        if (!job.exists) {
+            res.status(404).send({
+                message: 'Job is Not Found',
+                status: 404
+            });
+        } else {
+            await JobsCollection.doc(req.params.id).delete();
+
+            deleteJobProfileStorage(jobID);
+
+            res.status(202).send({
+                message: 'Delete Job Successfully',
+                status: 202
+            });
+        }
     } catch (error) {
         res.status(400).send({
-            message: 'Something went wrong to Delete a Job!',
-            error: error.errorMessage
+            message: 'Something Went Wrong to Delete Job',
+            status: 400,
+            error: error.message
         });
     }
 };
 
-module.exports = { addJob, getAllJobs, getJob, updateJob, deleteJob };
+module.exports = { addJob, getAllJobs, getJobDetail, updateJob, deleteJob };

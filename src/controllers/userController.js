@@ -1,45 +1,37 @@
 const { Storage } = require('@google-cloud/storage');
 const formidable = require('formidable-serverless');
 
-const firebase = require('../config/firebase');
-const FirebaseDatabase = require('../database');
+const firebaseApp = require('../config/firebaseApp');
+const firebaseAdmin = require('../config/firebaseAdmin');
+const UserModel = require('../models/userModel');
 
-const usersCollection = FirebaseDatabase.firestore().collection('users');
+const UsersCollection = firebaseAdmin.firestore().collection('users');
 
-const storage = new Storage({
+const CloudStorage = new Storage({
     projectId: 'buzz-wise-team',
-    keyFilename: 'serviceAccountKey.json',
+    keyFilename: 'serviceAccountKey.json'
 });
 
 const signUp = async (req, res) => {
     try {
-        /* Default validation
-        if (!req.body.name || !req.body.email || !req.body.password) {
-            return res.status(422).json({
-                name: 'Name is required',
-                email: 'Email is required',
-                password: 'Password is required'
-            });
-        }
-        */
-
         const { name, email, password } = req.body;
 
         if (!(name && email && password)) {
             return res.status(422).json({
-                error: 'Please fill out all fields!'
+                message: 'Please Fill Out All Fields',
+                status: 422
             });
         }
 
         const defaultUserProfile = 'https://storage.googleapis.com/buzz-wise-team.appspot.com/users/DefaultProfile.png';
 
-        await firebase.auth().createUserWithEmailAndPassword(req.body.email, req.body.password)
+        await firebaseApp.auth().createUserWithEmailAndPassword(email, password)
             .then((credential) => {
                 const date = new Date();
 
                 const getDateAndTime = date.toLocaleDateString() + '|' + date.toLocaleTimeString();
 
-                usersCollection.doc(credential.user.uid).set({
+                UsersCollection.doc(credential.user.uid).set({
                     id: credential.user.uid,
                     name: req.body.name,
                     headline: req.body.headline || null,
@@ -53,28 +45,49 @@ const signUp = async (req, res) => {
                 });
             })
             .then(() => {
-                const user = firebase.auth().currentUser;
+                const user = firebaseApp.auth().currentUser;
 
                 user.updateProfile({
-                    displayName: req.body.name,
+                    displayName: name,
                     photoURL: defaultUserProfile
                 });
             })
+            .then(() => {
+                const user = firebaseApp.auth().currentUser;
+
+                // Send Email Verification after Sign Up
+                if (user.emailVerified === false) {
+                    user.sendEmailVerification();
+                } else {
+                    return res.status(400).send({
+                        message: 'User Email Already Verified',
+                        status: 400
+                    });
+                }
+            })
             .then((data) => res.status(201)
                 .send({
-                    message: 'User Account Signed Up Successfully',
+                    message: 'User Successfully Sign Up Account',
+                    status: 201,
                     data
                 }))
             .catch((error) => {
                 if (error.code === 'auth/weak-password') {
-                    return res.status(500).json({ error: error.message });
+                    return res.status(500).send({
+                        error: error.message,
+                        status: 500
+                    });
                 } else {
-                    return res.status(500).json({ error: error.message });
+                    return res.status(500).send({
+                        error: error.message,
+                        status: 500
+                    });
                 }
             });
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Sign Up a User Account!',
+            message: 'Something Went Wrong to Sign Up User Account',
+            status: 400,
             error: error.message
         });
     }
@@ -82,39 +95,46 @@ const signUp = async (req, res) => {
 
 const signIn = async (req, res) => {
     try {
-        /* Default validation
-        if (!req.body.email || !req.body.password) {
-            return res.status(422).json({
-                email: 'Email is required',
-                password: 'Password is required'
-            });
-        }
-        */
-
         const { email, password } = req.body;
 
         if (!(email && password)) {
             return res.status(422).json({
-                error: 'Please fill out all fields!'
+                message: 'Please Fill Out All Fields',
+                status: 422
             });
         }
 
-        await firebase.auth().signInWithEmailAndPassword(req.body.email, req.body.password)
+        await firebaseApp.auth().signInWithEmailAndPassword(email, password)
             .then((data) => res.status(200)
                 .send({
-                    message: 'User Account Signed In Successfully',
+                    message: 'User Successfully Sign In Account',
+                    status: 200,
                     data
                 }))
+            .then(() => {
+                firebaseApp.auth().currentUser.getIdToken().then((idToken) => {
+                    // console.log(idToken); // It shows the Firebase access token now
+                });
+            })
             .catch((error) => {
                 if (error.code === 'auth/wrong-password') {
-                    return res.status(500).json({ message: 'Wrong Email or Password!' });
+                    return res.status(500).send({
+                        message: 'Invalid Email or Password',
+                        status: 500,
+                        error: error.message
+                    });
                 } else {
-                    return res.status(500).json({ error: 'Wrong Email or Password!' });
+                    return res.status(500).send({
+                        message: 'Invalid Email or Password',
+                        status: 500,
+                        error: error.message
+                    });
                 }
             });
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Sign In a User Account!',
+            message: 'Something Went Wrong to Sign In User Account',
+            status: 400,
             error: error.message
         });
     }
@@ -122,29 +142,25 @@ const signIn = async (req, res) => {
 
 const logOut = async (req, res) => {
     try {
-        const user = firebase.auth().currentUser;
+        const user = firebaseApp.auth().currentUser;
 
-        if (user) {
-            await firebase.auth().signOut().then(() => {
+        if (user && req.user.uid) {
+            await firebaseApp.auth().signOut().then(() => {
                 res.status(200).send({
                     message: 'User Log Out Successfully',
-                    status: 'Success'
-                });
-            }).catch((error) => {
-                res.status(404).send({
-                    message: 'Something Went Wrong to Log Out a User Account!',
-                    error: error.message
+                    status: 200
                 });
             });
         } else {
-            res.status(403).send({
-                message: 'User is already Log Out!',
-                status: 'Failure!'
+            res.status(401).send({
+                message: 'User is already Log Out',
+                status: 401
             });
         }
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Log Out a User Account!',
+            message: 'Something Went Wrong to Log Out User Account',
+            status: 400,
             error: error.message
         });
     }
@@ -152,163 +168,279 @@ const logOut = async (req, res) => {
 
 const verifyUserEmail = async (req, res) => {
     try {
-        await firebase.auth().currentUser.sendEmailVerification()
-            .then(() => res.status(200)
-                .send({
-                    message: 'Verify User Account Email Successfully',
-                    status: 'Email Verification Sent, Please check your inbox'
-                }))
-            .catch((error) => {
-                if (error.code === 'auth/too-many-requests') {
-                    return res.status(500).json({ error: error.message });
+        const user = firebaseApp.auth().currentUser;
+
+        if (user && req.user.uid) {
+            if (user.email) {
+                if (user.emailVerified === false) {
+                    await user.sendEmailVerification()
+                        .then(() => res.status(200)
+                            .send({
+                                message: 'Email Verification Sent, Please Check Your Inbox',
+                                status: 200
+                            }))
+                        .catch((error) => {
+                            if (error.code === 'auth/too-many-requests') {
+                                return res.status(500).send({
+                                    error: error.message,
+                                    status: 500
+                                });
+                            } else {
+                                return res.status(500).send({
+                                    error: error.message,
+                                    status: 500
+                                });
+                            }
+                        });
                 } else {
-                    return res.status(500).json({ error: error.message });
+                    return res.status(400).send({
+                        message: 'User Email Already Verified',
+                        status: 400
+                    });
                 }
+            } else {
+                res.status(400).send({
+                    message: 'User Email is Not Found',
+                    status: 400
+                });
+            }
+        } else {
+            res.status(403).send({
+                message: 'User is Not Sign In',
+                status: 403
             });
+        }
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Verify User Email Account!',
+            message: 'Something Went Wrong to Verify User Email Account',
+            status: 400,
             error: error.message
         });
     }
 };
 
-const forgetUserPassword = async (req, res) => {
+const forgotUserPassword = async (req, res) => {
     try {
         if (!req.body.email) {
-            return res.status(422).json({ email: 'Email is required!' });
+            return res.status(422).json({
+                message: 'Email Should Not be Empty',
+                status: 422
+            });
         }
 
-        await firebase.auth().sendPasswordResetEmail(req.body.email)
+        await firebaseApp.auth().sendPasswordResetEmail(req.body.email)
             .then(() => res.status(200)
                 .send({
-                    message: 'Forget User Password Successfully',
-                    status: 'Password Reset Email Sent, Please check your inbox'
+                    message: 'Password Reset Email has been Sent, Please Check Your Inbox',
+                    status: 200
                 }))
             .catch((error) => {
                 if (error.code === 'auth/invalid-email') {
-                    return res.status(500).json({ error: 'Invalid Email!' });
+                    return res.status(500).send({
+                        message: 'Invalid Email',
+                        status: 500,
+                        error: error.message
+                    });
                 } else if (error.code === 'auth/user-not-found') {
-                    return res.status(500).json({ error: 'Email Not Found!' });
+                    return res.status(500).send({
+                        message: 'Email is Not Found',
+                        status: 500,
+                        error: error.message
+                    });
                 }
             });
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Forget a User Account Password!',
+            message: 'Something Went Wrong to Forgot User Account Password',
+            status: 400,
             error: error.message
         });
     }
 };
 
-// Delete user account from authentication
-const deleteUserAccount = async (req, res) => {
+const changeUserEmail = async (req, res) => {
     try {
-        await firebase.auth().currentUser.delete()
-            .then(() => res.status(202)
-                .send({
-                    message: 'Delete User Account Successfully'
-                }))
-            .catch((error) => {
-                if (error.code === 'auth/invalid-email') {
-                    return res.status(500).json({ error: 'Invalid Email!' });
-                } else if (error.code === 'auth/user-not-found') {
-                    return res.status(500).json({ error: 'Email Not Found!' });
-                }
+        const user = firebaseApp.auth().currentUser;
+
+        const { newEmail, password } = req.body;
+
+        if (!(newEmail && password)) {
+            return res.status(422).json({
+                message: 'Please Fill Out All Fields',
+                status: 422
             });
+        }
+
+        if (user && req.user.uid) {
+            const credential = firebaseApp.auth.EmailAuthProvider.credential(
+                user.email,
+                password
+            );
+
+            await user.reauthenticateWithCredential(credential)
+                .then(() => {
+                    user.updateEmail(newEmail)
+                        .then(() => {
+                            res.status(202).send({
+                                message: 'User Email Account Successfully Changed',
+                                status: 202
+                            });
+                        })
+                        .catch((error) => {
+                            if (error.code === 'auth/invalid-email') {
+                                return res.status(500).send({
+                                    message: 'Invalid Email',
+                                    status: 500,
+                                    error: error.message
+                                });
+                            } else if (error.code === 'auth/email-already-in-use') {
+                                return res.status(500).send({
+                                    message: 'Email is Already in Use',
+                                    status: 500,
+                                    error: error.message
+                                });
+                            } else if (error.code === 'auth/requires-recent-login') {
+                                return res.status(500).send({
+                                    message: 'User Needs to Re-Authenticate Recent Login',
+                                    status: 500,
+                                    error: error.message
+                                });
+                            }
+                        });
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/wrong-password') {
+                        return res.status(500).send({
+                            message: 'Invalid Password',
+                            status: 500,
+                            error: error.message
+                        });
+                    }
+                });
+        }
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Delete a User Account!',
+            message: 'Something Went Wrong to Change User Email Account',
+            status: 400,
             error: error.message
         });
     }
 };
 
-const getAllUsersAccountProfiles = async (req, res) => {
+const changeUserPassword = async (req, res) => {
     try {
-        const response = [];
+        const user = firebaseApp.auth().currentUser;
 
-        await usersCollection.get().then((data) => {
-            const { docs } = data;
+        const { currentPassword, newPassword, confirmPassword } = req.body;
 
-            docs.map((doc) => {
-                const selectedData = {
-                    id: doc.data().id,
-                    name: doc.data().name,
-                    email: doc.data().email,
-                    headline: doc.data().headline,
-                    location: doc.data().location,
-                    status: doc.data().status,
-                    skills: doc.data().skills,
-                    userProfileImage: doc.data().userProfileImage,
-                    about: doc.data().about,
-                    createdAt: doc.data().createdAt
-                };
-
-                response.push(selectedData);
+        if (!(currentPassword && newPassword && confirmPassword)) {
+            return res.status(422).json({
+                message: 'Please Fill Out All Fields',
+                status: 422
             });
+        }
 
-            return response;
-        });
+        if (user && req.user.uid) {
+            if (newPassword !== confirmPassword) {
+                return res.status(422).send({
+                    message: 'New Password and Confirm Password is Not Matched',
+                    status: 422
+                });
+            }
 
-        res.status(200).send({
-            message: 'Display All User Profile',
-            data: response
-        });
+            const credential = firebaseApp.auth.EmailAuthProvider.credential(
+                user.email,
+                currentPassword
+            );
+
+            await user.reauthenticateWithCredential(credential)
+                .then(() => {
+                    user.updatePassword(newPassword)
+                        .then(() => {
+                            res.status(202).send({
+                                message: 'User Password Account Successfully Changed',
+                                status: 202
+                            });
+                        })
+                        .catch((error) => {
+                            if (error.code === 'auth/weak-password') {
+                                return res.status(500).send({
+                                    message: 'Weak Password',
+                                    status: 500,
+                                    error: error.message
+                                });
+                            } else {
+                                return res.status(500).send({
+                                    message: 'Invalid Password',
+                                    status: 500,
+                                    error: error.message
+                                });
+                            }
+                        });
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/wrong-password') {
+                        return res.status(500).send({
+                            message: 'Invalid Current Password',
+                            status: 500,
+                            error: error.message
+                        });
+                    } else {
+                        return res.status(500).send({
+                            message: 'Something Went Wrong to Change User Password Account',
+                            status: 500,
+                            error: error.message
+                        });
+                    }
+                });
+        } else {
+            res.status(403).send({
+                message: 'User is Not Sign In',
+                status: 403
+            });
+        }
     } catch (error) {
         res.status(400).send({
-            message: 'Something went wrong to Display All User Profile!',
+            message: 'Something Went Wrong to Change User Password Account',
+            status: 400,
+            error: error.message
+        });
+    }
+};
+
+const getAllUsersAccountProfile = async (req, res) => {
+    try {
+        UserModel.getAllUsersAccountProfile(req, res, UsersCollection);
+    } catch (error) {
+        res.status(400).send({
+            message: 'Something Went Wrong to Display All Users Profile',
+            status: 400,
             error: error.message
         });
     }
 };
 
 // Get the current user's account profile by login with email and password
-const getCurrentUserAccountProfile = async (req, res) => {
+const getUserAccountProfile = async (req, res) => {
     try {
-        const user = firebase.auth().currentUser;
-
-        if (user) {
-            await usersCollection.doc(user.uid).get()
-                .then((result) => {
-                    res.status(200).send({
-                        message: 'Display a User Profile',
-                        data: result.data()
-                    });
-                });
-        } else {
-            res.status(403).send({
-                message: 'User is not Sign In!',
-                status: 'Failure!'
-            });
-        }
+        UserModel.getUserAccountProfile(req, res, firebaseApp, UsersCollection);
     } catch (error) {
         res.status(400).send({
-            message: 'Something went wrong to Display a User Profile!',
+            message: 'Something Went Wrong to Display User Account Profile',
+            status: 400,
             error: error.message
         });
     }
 };
 
-// Get the user's account profile by id
-const getUserAccountProfile = async (req, res) => {
+// Get the user's account profile by id (Only for Testing)
+const getUserAccountProfileByID = async (req, res) => {
     try {
-        const uid = req.params.id;
-        const user = await usersCollection.doc(uid);
-        const profile = await user.get();
-
-        if (!profile.exists) {
-            res.status(404).send({
-                message: 'Cannot Found User!',
-            });
-        } else {
-            res.status(200).send({
-                message: 'Display a User Profile',
-                data: profile.data()
-            });
-        }
+        UserModel.getUserAccountProfileByID(req, res, UsersCollection);
     } catch (error) {
         res.status(400).send({
-            message: 'Something went wrong to Display a User Profile!',
+            message: 'Something Went Wrong to Display User Account Profile',
+            status: 400,
             error: error.message
         });
     }
@@ -317,14 +449,23 @@ const getUserAccountProfile = async (req, res) => {
 // Update the current user's account profile by login with email and password
 const updateUserAccountProfile = async (req, res) => {
     try {
-        const user = firebase.auth().currentUser;
+        const user = firebaseApp.auth().currentUser;
 
         const form = new formidable.IncomingForm({ multiples: true });
 
-        if (user) {
-            await usersCollection.doc(user.uid).get().then(() => {
+        if (user && req.user.uid) {
+            await UsersCollection.doc(user.uid).get().then(() => {
+                // Default implementation
                 form.parse(req, async (error, fields, files) => {
-                    const userId = user.uid;
+                    // Create validation of the fields and files
+                    if (!fields.name || !fields.headline || !fields.location || !fields.skills || !fields.status || !files.userProfileImage || !fields.about) {
+                        return res.status(422).json({
+                            message: 'Please Fill Out All Fields',
+                            status: 422
+                        });
+                    }
+
+                    const userID = user.uid;
 
                     const bucketName = 'buzz-wise-team';
 
@@ -332,6 +473,7 @@ const updateUserAccountProfile = async (req, res) => {
 
                     // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
 
+                    // The variable should be match with the name of the key field
                     const { userProfileImage } = files;
 
                     // URL of the uploaded image
@@ -339,225 +481,190 @@ const updateUserAccountProfile = async (req, res) => {
 
                     if (error) {
                         return res.status(400).json({
-                            message: 'There was an error parsing the files!',
+                            message: 'There Was an Error Parsing The Files',
+                            status: 400,
                             error: error.message
                         });
                     }
 
-                    const bucket = storage.bucket(`gs://${bucketName}.appspot.com`);
+                    const bucket = CloudStorage.bucket(`gs://${bucketName}.appspot.com`);
 
                     if (userProfileImage.size === 0) {
-                        // Do nothing
-                        res.send('No user profile image');
+                        res.status(404).send({
+                            message: 'No Image Found',
+                            status: 404
+                        });
                     } else {
                         const imageResponse = await bucket.upload(userProfileImage.path, {
-                            destination: `users/${userProfileImage.name}`,
+                            destination: `users/${userID}/${userProfileImage.name}`,
                             resumable: true,
                             metadata: {
                                 metadata: {
-                                    firebaseStorageDownloadTokens: userId
+                                    firebaseStorageDownloadTokens: userID
                                 }
                             }
                         });
 
                         // Profile image url
-                        // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uid}`;
+                        // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${userID}`;
 
                         imageURL = storagePublicURL + imageResponse[0].name;
                     }
 
+                    const date = new Date();
+
+                    const getDateAndTime = date.toLocaleDateString() + '|' + date.toLocaleTimeString();
+
                     // Object to send to the database
-                    const profileData = {
+                    const userData = {
                         name: fields.name,
                         headline: fields.headline,
                         location: fields.location,
                         skills: fields.skills,
                         status: fields.status,
                         userProfileImage: userProfileImage.size === 0 ? '' : imageURL,
-                        about: fields.about
+                        about: fields.about,
+                        updatedAt: getDateAndTime
                     };
 
                     // Added to the firestore collection
-                    await usersCollection.doc(userId).update(profileData, { merge: true })
+                    await UsersCollection.doc(userID).update(userData, { merge: true })
                         .then(() => {
                             user.updateProfile({
-                                displayName: profileData.name,
-                                photoURL: profileData.userProfileImage
+                                displayName: userData.name,
+                                photoURL: userData.userProfileImage
                             });
                         })
                         .then(() => {
                             res.status(202).send({
-                                message: 'Successfully Update a User Profile',
-                                data: profileData
+                                message: 'Successfully Update User Profile',
+                                status: 202,
+                                data: userData
                             });
                         });
                 });
             });
         } else {
             res.status(403).send({
-                message: 'User is not Sign In!',
-                status: 'Failure!'
+                message: 'User is Not Sign In',
+                status: 403
             });
         }
-
-        /* Default implementation
-        form.parse(req, async (error, fields, files) => {
-            const userId = user.uid;
-
-            const bucketName = 'buzz-wise-team';
-
-            const storagePublicURL = `https://storage.googleapis.com/${bucketName}.appspot.com/`;
-
-            // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
-
-            const { userProfileImage } = files;
-
-            // URL of the uploaded image
-            let imageURL;
-
-            if (error) {
-                return res.status(400).json({
-                    message: 'There was an error parsing the files!',
-                    error: error.message
-                });
-            }
-
-            const bucket = storage.bucket(`gs://${bucketName}.appspot.com`);
-
-            if (userProfileImage.size === 0) {
-                // Do nothing
-                res.send('No user profile image');
-            } else {
-                const imageResponse = await bucket.upload(userProfileImage.path, {
-                    destination: `users/${userProfileImage.name}`,
-                    resumable: true,
-                    metadata: {
-                        metadata: {
-                            firebaseStorageDownloadTokens: userId
-                        }
-                    }
-                });
-
-                // Profile image url
-                // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uid}`;
-
-                imageURL = storagePublicURL + imageResponse[0].name;
-            }
-
-            // Object to send to the database
-            const profileData = {
-                name: fields.name,
-                headline: fields.headline,
-                location: fields.location,
-                skills: fields.skills,
-                status: fields.status,
-                userProfileImage: userProfileImage.size === 0 ? '' : imageURL,
-                about: fields.about
-            };
-
-            // Added to the firestore collection
-            await usersCollection.doc(userId).update(profileData, { merge: true })
-                .then(() => {
-                    user.updateProfile({
-                        displayName: profileData.name,
-                        photoURL: profileData.userProfileImage
-                    });
-                })
-                .then(() => {
-                    res.status(202).send({
-                        message: 'Successfully Update a User Profile',
-                        data: profileData
-                    });
-                });
-        });
-        */
     } catch (error) {
         res.status(400).send({
-            message: 'Something went wrong to Update a User Profile!',
+            message: 'Something Went Wrong to Update User Profile',
+            status: 400,
             error: error.message
         });
     }
 };
 
-// Update the user's account profile by id
-const updateUserProfile = async (req, res) => {
+// Update the user's account profile by id (Only for Testing)
+const updateUserAccountProfileByID = async (req, res) => {
     try {
+        const userID = req.params.id;
+        const user = await UsersCollection.doc(userID);
+        const profile = await user.get();
+
         const form = new formidable.IncomingForm({ multiples: true });
 
-        form.parse(req, async (error, fields, files) => {
-            const userId = req.params.id;
+        if (!profile.exists) {
+            res.status(404).send({
+                message: 'User is Not Found',
+                status: 404
+            });
+        } else {
+            // Default implementation
+            form.parse(req, async (error, fields, files) => {
+                // Create validation of the fields and files
+                if (!fields.name || !fields.headline || !fields.location || !fields.skills || !fields.status || !files.userProfileImage || !fields.about) {
+                    return res.status(422).json({
+                        message: 'Please Fill Out All Fields',
+                        status: 422
+                    });
+                }
 
-            const bucketName = 'buzz-wise-team';
+                const bucketName = 'buzz-wise-team';
 
-            const storagePublicURL = `https://storage.googleapis.com/${bucketName}.appspot.com/`;
+                const storagePublicURL = `https://storage.googleapis.com/${bucketName}.appspot.com/`;
 
-            // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
+                // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
 
-            const { userProfileImage } = files;
+                // The variable should be match with the name of the key field
+                const { userProfileImage } = files;
 
-            // URL of the uploaded image
-            let imageURL;
+                // URL of the uploaded image
+                let imageURL;
 
-            if (error) {
-                return res.status(400).json({
-                    message: 'There was an error parsing the files!',
-                    error: error.message
-                });
-            }
+                if (error) {
+                    return res.status(400).json({
+                        message: 'There Was an Error Parsing The Files',
+                        status: 400,
+                        error: error.message
+                    });
+                }
 
-            const bucket = storage.bucket(`gs://${bucketName}.appspot.com`);
+                const bucket = CloudStorage.bucket(`gs://${bucketName}.appspot.com`);
 
-            if (userProfileImage.size === 0) {
-                // Do nothing
-                res.send('No user profile image');
-            } else {
-                const imageResponse = await bucket.upload(userProfileImage.path, {
-                    destination: `users/${userProfileImage.name}`,
-                    resumable: true,
-                    metadata: {
+                if (userProfileImage.size === 0) {
+                    res.status(404).send({
+                        message: 'No Image Found',
+                        status: 404
+                    });
+                } else {
+                    const imageResponse = await bucket.upload(userProfileImage.path, {
+                        destination: `users/${userID}/${userProfileImage.name}`,
+                        resumable: true,
                         metadata: {
-                            firebaseStorageDownloadTokens: userId
+                            metadata: {
+                                firebaseStorageDownloadTokens: userID
+                            }
                         }
-                    }
-                });
-
-                // Profile image url
-                // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uid}`;
-
-                imageURL = storagePublicURL + imageResponse[0].name;
-            }
-
-            // Object to send to the database
-            const profileData = {
-                name: fields.name,
-                headline: fields.headline,
-                location: fields.location,
-                skills: fields.skills,
-                status: fields.status,
-                userProfileImage: userProfileImage.size === 0 ? '' : imageURL,
-                about: fields.about
-            };
-
-            // Added to the firestore collection
-            await usersCollection.doc(userId).update(profileData, { merge: true })
-                .then(() => {
-                    const user = firebase.auth().currentUser;
-
-                    user.updateProfile({
-                        displayName: profileData.name,
-                        photoURL: profileData.userProfileImage
                     });
-                })
-                .then(() => {
-                    res.status(202).send({
-                        message: 'Successfully Update a User Profile',
-                        data: profileData
+
+                    // Profile image url
+                    // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${userID}`;
+
+                    imageURL = storagePublicURL + imageResponse[0].name;
+                }
+
+                const date = new Date();
+
+                const getDateAndTime = date.toLocaleDateString() + '|' + date.toLocaleTimeString();
+
+                // Object to send to the database
+                const userData = {
+                    name: fields.name,
+                    headline: fields.headline,
+                    location: fields.location,
+                    skills: fields.skills,
+                    status: fields.status,
+                    userProfileImage: userProfileImage.size === 0 ? '' : imageURL,
+                    about: fields.about,
+                    updatedAt: getDateAndTime
+                };
+
+                // Added to the firestore collection
+                await UsersCollection.doc(userID).update(userData, { merge: true })
+                    .then(() => {
+                        user.updateProfile({
+                            displayName: userData.name,
+                            photoURL: userData.userProfileImage
+                        });
+                    })
+                    .then(() => {
+                        res.status(202).send({
+                            message: 'Successfully Update User Profile',
+                            status: 202,
+                            data: userData
+                        });
                     });
-                });
-        });
+            });
+        }
     } catch (error) {
         res.status(400).send({
-            message: 'Something went wrong to Update a User Profile!',
+            message: 'Something Went Wrong to Update User Profile',
+            status: 400,
             error: error.message
         });
     }
@@ -565,14 +672,23 @@ const updateUserProfile = async (req, res) => {
 
 const editUserProfile = async (req, res) => {
     try {
-        const user = firebase.auth().currentUser;
+        const user = firebaseApp.auth().currentUser;
 
         const form = new formidable.IncomingForm({ multiples: true });
 
-        if (user) {
-            await usersCollection.doc(user.uid).get().then(() => {
+        if (user && req.user.uid) {
+            await UsersCollection.doc(user.uid).get().then(() => {
+                // Default implementation
                 form.parse(req, async (error, fields, files) => {
-                    const userId = user.uid;
+                    // Create validation of the fields and files
+                    if (!fields.name || !files.userProfileImage) {
+                        return res.status(400).send({
+                            message: 'Please Fill All The Required Fields',
+                            status: 400
+                        });
+                    }
+
+                    const userID = user.uid;
 
                     const bucketName = 'buzz-wise-team';
 
@@ -580,6 +696,7 @@ const editUserProfile = async (req, res) => {
 
                     // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
 
+                    // The variable should be match with the name of the key field
                     const { userProfileImage } = files;
 
                     // URL of the uploaded image
@@ -587,131 +704,74 @@ const editUserProfile = async (req, res) => {
 
                     if (error) {
                         return res.status(400).json({
-                            message: 'There was an error parsing the files!',
+                            message: 'There Was an Error Parsing The Files',
+                            status: 400,
                             error: error.message
                         });
                     }
 
-                    const bucket = storage.bucket(`gs://${bucketName}.appspot.com`);
+                    const bucket = CloudStorage.bucket(`gs://${bucketName}.appspot.com`);
 
                     if (userProfileImage.size === 0) {
-                        // Do nothing
-                        res.send('No user profile image');
+                        res.status(404).send({
+                            message: 'No Image Found',
+                            status: 404
+                        });
                     } else {
                         const imageResponse = await bucket.upload(userProfileImage.path, {
-                            destination: `users/${userProfileImage.name}`,
+                            destination: `users/${userID}/${userProfileImage.name}`,
                             resumable: true,
                             metadata: {
                                 metadata: {
-                                    firebaseStorageDownloadTokens: userId
+                                    firebaseStorageDownloadTokens: userID
                                 }
                             }
                         });
 
                         // Profile image url
-                        // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uid}`;
+                        // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${userID}`;
 
                         imageURL = storagePublicURL + imageResponse[0].name;
                     }
 
+                    const date = new Date();
+
+                    const getDateAndTime = date.toLocaleDateString() + '|' + date.toLocaleTimeString();
+
                     // Object to send to the database
-                    const profileData = {
+                    const userData = {
                         name: fields.name,
-                        userProfileImage: userProfileImage.size === 0 ? '' : imageURL
+                        userProfileImage: userProfileImage.size === 0 ? '' : imageURL,
+                        updatedAt: getDateAndTime
                     };
 
                     // Added to the firestore collection
-                    await usersCollection.doc(userId).update(profileData, { merge: true })
+                    await UsersCollection.doc(userID).update(userData, { merge: true })
                         .then(() => {
                             user.updateProfile({
-                                displayName: profileData.name,
-                                photoURL: profileData.userProfileImage
+                                displayName: userData.name,
+                                photoURL: userData.userProfileImage
                             });
                         })
                         .then(() => {
                             res.status(202).send({
-                                message: 'Successfully Update a User Profile',
-                                data: profileData
+                                message: 'Successfully Edit User Profile',
+                                status: 202,
+                                data: userData
                             });
                         });
                 });
             });
         } else {
             res.status(403).send({
-                message: 'User is not Sign In!',
-                status: 'Failure!'
+                message: 'User is Not Sign In',
+                status: 403
             });
         }
-
-        /* Default implementation
-        form.parse(req, async (error, fields, files) => {
-            const userId = user.uid;
-
-            const bucketName = 'buzz-wise-team';
-
-            const storagePublicURL = `https://storage.googleapis.com/${bucketName}.appspot.com/`;
-
-            // const storagePublicURL = `https://firebasestorage.googleapis.com/v0/b/${bucketName}.appspot.com/o/`;
-
-            const { userProfileImage } = files;
-
-            // URL of the uploaded image
-            let imageURL;
-
-            if (error) {
-                return res.status(400).json({
-                    message: 'There was an error parsing the files!',
-                    error: error.message
-                });
-            }
-
-            const bucket = storage.bucket(`gs://${bucketName}.appspot.com`);
-
-            if (userProfileImage.size === 0) {
-                // Do nothing
-                res.send('No user profile image');
-            } else {
-                const imageResponse = await bucket.upload(userProfileImage.path, {
-                    destination: `users/${userProfileImage.name}`,
-                    resumable: true,
-                    metadata: {
-                        metadata: {
-                            firebaseStorageDownloadTokens: userId
-                        }
-                    }
-                });
-
-                // Profile image url
-                // imageURL = `${storagePublicURL + encodeURIComponent(imageResponse[0].name)}?alt=media&token=${uid}`;
-
-                imageURL = storagePublicURL + imageResponse[0].name;
-            }
-
-            // Object to send to the database
-            const profileData = {
-                name: fields.name,
-                userProfileImage: userProfileImage.size === 0 ? '' : imageURL
-            };
-
-            // Added to the firestore collection
-            await usersCollection.doc(userId).update(profileData, { merge: true })
-                .then(() => {
-                    user.updateProfile({
-                        displayName: profileData.name,
-                        photoURL: profileData.userProfileImage
-                    });
-                })
-                .then(() => {
-                    res.status(202).send({
-                        message: 'Successfully Update a User Profile',
-                        data: profileData
-                    });
-                });
-        });
-        */
     } catch (error) {
         res.status(400).send({
-            message: 'Something went wrong to Update a User Profile!',
+            message: 'Something Went Wrong to Edit User Profile',
+            status: 400,
             error: error.message
         });
     }
@@ -719,120 +779,170 @@ const editUserProfile = async (req, res) => {
 
 const editUserInformation = async (req, res) => {
     try {
-        const user = firebase.auth().currentUser;
+        const user = firebaseApp.auth().currentUser;
 
         const form = new formidable.IncomingForm({ multiples: true });
 
-        if (user) {
-            await usersCollection.doc(user.uid).get().then(() => {
+        if (user && req.user.uid) {
+            await UsersCollection.doc(user.uid).get().then(() => {
+                // Default implementation
                 form.parse(req, async (error, fields) => {
-                    const userId = user.uid;
+                    // Create validation of the fields
+                    if (!fields.headline || !fields.location || !fields.skills || !fields.status || !fields.about) {
+                        return res.status(400).send({
+                            message: 'All Fields are Required',
+                            status: 400
+                        });
+                    }
+
+                    const userID = user.uid;
 
                     if (error) {
                         return res.status(400).json({
-                            message: 'There was an error parsing the files!',
+                            message: 'There Was an Error Parsing The Files',
+                            status: 400,
                             error: error.message
                         });
                     }
 
+                    const date = new Date();
+
+                    const getDateAndTime = date.toLocaleDateString() + '|' + date.toLocaleTimeString();
+
                     // Object to send to the database
-                    const profileData = {
+                    const userData = {
                         headline: fields.headline,
                         skills: fields.skills,
                         location: fields.location,
                         status: fields.status,
-                        about: fields.about
+                        about: fields.about,
+                        updatedAt: getDateAndTime
                     };
 
                     // Added to the firestore collection
-                    await usersCollection.doc(userId).update(profileData, { merge: true })
+                    await UsersCollection.doc(userID).update(userData, { merge: true })
                         .then(() => {
                             user.updateProfile({
-                                displayName: profileData.name,
-                                photoURL: profileData.userProfileImage
+                                displayName: userData.name,
+                                photoURL: userData.userProfileImage
                             });
                         })
                         .then(() => {
                             res.status(202).send({
-                                message: 'Successfully Update a User Profile',
-                                data: profileData
+                                message: 'Successfully Edit User Information',
+                                status: 202,
+                                data: userData
                             });
                         });
                 });
             });
         } else {
             res.status(403).send({
-                message: 'User is not Sign In!',
-                status: 'Failure!'
+                message: 'User is Not Sign In',
+                status: 403
             });
         }
-
-        /* Default implementation
-        const user = firebase.auth().currentUser;
-
-        const form = new formidable.IncomingForm({ multiples: true });
-
-        form.parse(req, async (error, fields) => {
-            const userId = user.uid;
-
-            if (error) {
-                return res.status(400).json({
-                    message: 'There was an error parsing the files!',
-                    error: error.message
-                });
-            }
-
-            // Object to send to the database
-            const profileData = {
-                headline: fields.headline,
-                skills: fields.skills,
-                location: fields.location,
-                status: fields.status,
-                about: fields.about
-            };
-
-            // Added to the firestore collection
-            await usersCollection.doc(userId).update(profileData, { merge: true })
-                .then(() => {
-                    user.updateProfile({
-                        displayName: profileData.name,
-                        photoURL: profileData.userProfileImage
-                    });
-                })
-                .then(() => {
-                    res.status(202).send({
-                        message: 'Successfully Update a User Profile',
-                        data: profileData
-                    });
-                });
-        });
-        */
     } catch (error) {
         res.status(400).send({
-            message: 'Something went wrong to Update a User Profile!',
+            message: 'Something Went Wrong to Edit User Information',
+            status: 400,
             error: error.message
         });
     }
 };
 
-// Delete user account data from firestore
-const deleteUserAccountProfile = async (req, res) => {
+const deleteUserProfileStorage = async (uid) => {
     try {
-        await usersCollection.doc(req.params.id).delete();
+        const bucket = CloudStorage.bucket('buzz-wise-team.appspot.com');
 
-        res.status(202).send({
-            message: 'Successfully Delete a User Profile',
+        // Delete the folder itself
+        bucket.deleteFiles({
+            prefix: `users/${uid}`
         });
+
+        /*
+        // Delete files in the folder
+        bucket.deleteFiles({
+          prefix: filePath
+        });
+        */
+
+        // console.log('Folder deleted successfully.');
+    } catch (error) {
+        throw new Error('Error Deleting Folder: ', error);
+    }
+};
+
+// Delete user account from authentication and firestore
+const deleteUserAccount = async (req, res) => {
+    try {
+        const user = firebaseApp.auth().currentUser;
+
+        if (user && req.user.uid) {
+            await user.delete()
+                .then(() => {
+                    // Delete the user's account profile from firestore
+                    UsersCollection.doc(user.uid).delete();
+
+                    deleteUserProfileStorage(user.uid);
+                })
+                .then(() => res.status(200)
+                    .send({
+                        message: 'Delete User Account Successfully',
+                        status: 200
+                    }));
+        } else {
+            res.status(403).send({
+                message: 'User is Not Sign In',
+                status: 403
+            });
+        }
     } catch (error) {
         res.status(400).send({
-            message: 'Something went wrong to Delete a User Profile!',
+            message: 'Something Went Wrong to Delete User Account',
+            status: 400,
+            error: error.message
+        });
+    }
+};
+
+// Delete user account from authentication and firestore by id (Only for Testing)
+const deleteUserAccountByID = async (req, res) => {
+    try {
+        const userID = req.params.id;
+        const user = await UsersCollection.doc(userID);
+        const profile = await user.get();
+
+        if (!profile.exists) {
+            res.status(404).send({
+                message: 'User is Not Found',
+                status: 404
+            });
+        } else {
+            // Delete the user's account profile from authentication
+            await firebaseApp.auth().currentUser.delete();
+
+            // Delete the user's account profile from firestore
+            await UsersCollection.doc(userID).delete();
+
+            await deleteUserProfileStorage(userID);
+
+            res.status(200).send({
+                message: 'Delete User Profile Successfully',
+                status: 200
+            });
+        }
+    } catch (error) {
+        res.status(400).send({
+            message: 'Something Went Wrong to Delete User Profile',
+            status: 400,
             error: error.message
         });
     }
 };
 
 module.exports = {
-    signUp, signIn, logOut, verifyUserEmail, forgetUserPassword, deleteUserAccount,
-    getAllUsersAccountProfiles, getUserAccountProfile, getCurrentUserAccountProfile, updateUserAccountProfile, updateUserProfile,
-    editUserProfile, editUserInformation, deleteUserAccountProfile
+    signUp, signIn, logOut, verifyUserEmail, forgotUserPassword, changeUserEmail, changeUserPassword,
+    getAllUsersAccountProfile, getUserAccountProfile, getUserAccountProfileByID, updateUserAccountProfile,
+    updateUserAccountProfileByID, editUserProfile, editUserInformation, deleteUserAccount, deleteUserAccountByID
 };

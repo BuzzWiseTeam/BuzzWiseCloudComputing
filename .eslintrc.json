@@ -26,6 +26,10 @@
         "prefer-template":"off",
         "object-property-newline": "off",
         "array-callback-return": "off",
-        "prefer-destructuring": "off"
+        "prefer-destructuring": "off",
+        "no-unused-expressions": "off",
+        "no-unused-vars":"off",
+        "quotes": "off",
+        "import/no-extraneous-dependencies": "off"
     }
 }
