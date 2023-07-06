@@ -300,6 +300,16 @@ const changeUserEmail = async (req, res) => {
                             }
                         });
                 })
+                .then(() => {
+                    const date = new Date();
+
+                    const getDateAndTime = date.toLocaleDateString() + '|' + date.toLocaleTimeString();
+
+                    UsersCollection.doc(user.uid).update({
+                        email: newEmail,
+                        updatedAt: getDateAndTime
+                    });
+                })
                 .catch((error) => {
                     if (error.code === 'auth/wrong-password') {
                         return res.status(500).send({
