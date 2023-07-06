@@ -17,7 +17,8 @@ const getAllUsersAccountProfile = async (req, res, collection) => {
                 skills: doc.data().skills,
                 userProfileImage: doc.data().userProfileImage,
                 about: doc.data().about,
-                createdAt: doc.data().createdAt
+                createdAt: doc.data().createdAt,
+                updatedAt: doc.data().updatedAt || "Hasn't Been Updated Yet"
             };
 
             response.push(selectedData);

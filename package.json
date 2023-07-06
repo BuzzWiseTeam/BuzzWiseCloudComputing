@@ -25,6 +25,7 @@
     "firebase": "^7.24.0",
     "firebase-admin": "^11.9.0",
     "formidable-serverless": "^1.1.1",
+    "helmet": "^7.0.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

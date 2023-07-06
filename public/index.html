@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buzz Wise API</title>
+    <title>API | Buzz Wise</title>
     <style>
         @import url(https://fonts.googleapis.com/css2?family=Montserrat&display=swap);
 
@@ -76,6 +76,7 @@
         }
 
         .jobs-title,
+        .auth-title,
         .users-title {
             margin-top: 3rem;
         }
@@ -364,7 +365,7 @@
             </li>
         </ul>
 
-        <h2 class="users-title">Users</h2>
+        <h2 class="auth-title">Auth</h2>
 
         <!-- User Sign Up -->
         <h3 id="sign-up"><a href="#sign-up">Sign Up</a></h3>
@@ -373,7 +374,7 @@
                 URL
                 <ul>
                     <li>
-                        <code>/api/users/signUp</code>
+                        <code>/api/auth/signUp</code>
                     </li>
                 </ul>
             </li>
@@ -400,13 +401,13 @@
             <li>
                 Response
                 <pre v-pre data-lang="json">
-        <code class="response">
-    {
-        "message": "User Successfully Sign Up Account",
-        "status": 201
-    }
-        </code>
-        </pre>
+                <code class="response">
+            {
+                "message": "User Successfully Sign Up Account",
+                "status": 201
+            }
+                </code>
+                </pre>
             </li>
         </ul>
 
@@ -417,7 +418,7 @@
                 URL
                 <ul>
                     <li>
-                        <code>/api/users/signIn</code>
+                        <code>/api/auth/signIn</code>
                     </li>
                 </ul>
             </li>
@@ -443,22 +444,22 @@
             <li>
                 Response
                 <pre v-pre data-lang="json">
-        <code class="response">
-    {
-        "message": "User Successfully Sign In Account",
-        "status": 200,
-        "data": {
-            "user": {
-                "uid": "zzBes2aFGEVJJipYDOixtmytH3Y2",
-                "displayName": "Billy Mobile",
-                "email": "billymobile19@gmail.com",
-                "emailVerified": false,
-                "token": "access token"
+                <code class="response">
+            {
+                "message": "User Successfully Sign In Account",
+                "status": 200,
+                "data": {
+                    "user": {
+                        "uid": "zzBes2aFGEVJJipYDOixtmytH3Y2",
+                        "displayName": "Billy Mobile",
+                        "email": "billymobile19@gmail.com",
+                        "emailVerified": false,
+                        "token": "access token"
+                    }
+                }
             }
-        }
-    }
-        </code>
-        </pre>
+                </code>
+                </pre>
             </li>
         </ul>
 
@@ -469,7 +470,7 @@
                 URL
                 <ul>
                     <li>
-                        <code>/api/users/logOut</code>
+                        <code>/api/auth/logOut</code>
                     </li>
                 </ul>
             </li>
@@ -488,13 +489,13 @@
             <li>
                 Response
                 <pre v-pre data-lang="json">
-        <code class="response">
-    {
-        "message": "User Log Out Successfully",
-        "status": 200
-    }
-        </code>
-        </pre>
+                <code class="response">
+            {
+                "message": "User Log Out Successfully",
+                "status": 200
+            }
+                </code>
+                </pre>
             </li>
         </ul>
 
@@ -505,7 +506,7 @@
                 URL
                 <ul>
                     <li>
-                        <code>/api/users/verifyUserEmail</code>
+                        <code>/api/auth/verifyUserEmail</code>
                     </li>
                 </ul>
             </li>
@@ -524,13 +525,13 @@
             <li>
                 Response
                 <pre v-pre data-lang="json">
-        <code class="response">
-    {
-        "message": "Email Verification Sent, Please Check Your Inbox'",
-        "status": 200
-    }
-        </code>
-        </pre>
+                <code class="response">
+            {
+                "message": "Email Verification Sent, Please Check Your Inbox'",
+                "status": 200
+            }
+                </code>
+                </pre>
             </li>
         </ul>
 
@@ -541,7 +542,7 @@
                 URL
                 <ul>
                     <li>
-                        <code>/api/users/forgotUserPassword</code>
+                        <code>/api/auth/forgotUserPassword</code>
                     </li>
                 </ul>
             </li>
@@ -566,15 +567,149 @@
             <li>
                 Response
                 <pre v-pre data-lang="json">
+                <code class="response">
+            {
+                "message": "Password Reset Email has been Sent, Please Check Your Inbox",
+                "status": 200
+            }
+                </code>
+                </pre>
+            </li>
+        </ul>
+
+        <!-- Change User Email -->
+        <h3 id="change-user-email"><a href="#change-user-email">Change User Email</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/auth/changeUserEmail</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>PUT</li>
+                </ul>
+            </li>
+            <li>
+                Headers
+                <ul>
+                    <li><code>Content-Type</code> : <code>application/json</code></li>
+                    <li><code>Authorization</code> : <code> Bearer &lt;token&gt;</code></li>
+                </ul>
+            </li>
+            <li>
+                Request Body (Raw JSON)
+                <ul>
+                    <li><code>newEmail</code> as <code>string</code></li>
+                    <li><code>password</code> as <code>string</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre v-pre data-lang="json">
         <code class="response">
     {
-        "message": "Password Reset Email has been Sent, Please Check Your Inbox",
-        "status": 200
+        "message": "User Email Account Successfully Changed",
+        "status": 202
     }
         </code>
         </pre>
             </li>
         </ul>
+
+        <!-- Change User Password -->
+        <h3 id="change-user-password"><a href="#change-user-password">Change User Password</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/auth/changeUserPassword</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>PUT</li>
+                </ul>
+            </li>
+            <li>
+                Headers
+                <ul>
+                    <li><code>Content-Type</code> : <code>application/json</code></li>
+                    <li><code>Authorization</code> : <code> Bearer &lt;token&gt;</code></li>
+                </ul>
+            </li>
+            <li>
+                Request Body (Raw JSON)
+                <ul>
+                    <li><code>currentPassword</code> as <code>string</code></li>
+                    <li><code>newPassword</code> as <code>string</code></li>
+                    <li><code>confirmPassword</code> as <code>string</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre v-pre data-lang="json">
+                <code class="response">
+    {
+        "message": "User Password Account Successfully Changed",
+        "status": 202
+    }
+                </code>
+                </pre>
+            </li>
+        </ul>
+
+        <!-- Delete User Account -->
+        <h3 id="delete-user-account"><a href="#delete-user-account">Delete User Account</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/auth/deleteUserAccount || /api/auth/deleteUserAccount/:id <i>(Only For Testing)</i></code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>DELETE</li>
+                </ul>
+            </li>
+            <li>
+                Params
+                <ul>
+                    <li><code>key</code> : <code>id</code></li>
+                    <li><code>value</code> : <code>user id</code></li>
+                </ul>
+            </li>
+            <li>
+                Headers
+                <ul>
+                    <li><code>Authorization</code> : <code> Bearer &lt;token&gt;</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre v-pre data-lang="json">
+                <code class="response">
+    {
+        "message": "Delete User Account Successfully",
+        "status": 200
+    }
+                </code>
+                </pre>
+            </li>
+        </ul>
+
+        <h2 class="users-title">Users</h2>
 
         <!-- Display All Users Account Profiles -->
         <h3 id="display-users-profile"><a href="#display-users-profile">Display All Users Profile</a></h3>
@@ -612,7 +747,8 @@
                 "skills": null,
                 "userProfileImage": "URL",
                 "about": null,
-                "createdAt": "6/15/2023|1:32:38 AM"
+                "createdAt": "6/15/2023|1:32:38 AM",
+                "updatedAt": "7/2/2023|11:17:16 AM"
             },
             ...
         ]
@@ -629,7 +765,7 @@
                 URL
                 <ul>
                     <li>
-                        <code>/api/users/userProfile || /api/users/userProfile/:id</code>
+                        <code>/api/users/userProfile || /api/users/userProfile/:id (Only For Testing)</code>
                     </li>
                 </ul>
             </li>
@@ -684,7 +820,7 @@
                 URL
                 <ul>
                     <li>
-                        <code>/api/users/updateUserAccountProfile || /api/users/updateUserAccountProfile/:id</code>
+                        <code>/api/users/updateUserAccountProfile || /api/users/updateUserAccountProfile/:id (Only For Testing)</code>
                     </li>
                 </ul>
             </li>
@@ -844,138 +980,6 @@
     }
         </code>
         </pre>
-            </li>
-        </ul>
-
-        <!-- Change User Email -->
-        <h3 id="change-user-email"><a href="#change-user-email">Change User Email</a></h3>
-        <ul>
-            <li>
-                URL
-                <ul>
-                    <li>
-                        <code>/api/users/changeUserEmail</code>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                Method
-                <ul>
-                    <li>PUT</li>
-                </ul>
-            </li>
-            <li>
-                Headers
-                <ul>
-                    <li><code>Content-Type</code> : <code>application/json</code></li>
-                    <li><code>Authorization</code> : <code> Bearer &lt;token&gt;</code></li>
-                </ul>
-            </li>
-            <li>
-                Request Body (Raw JSON)
-                <ul>
-                    <li><code>newEmail</code> as <code>string</code></li>
-                    <li><code>password</code> as <code>string</code></li>
-                </ul>
-            </li>
-            <li>
-                Response
-                <pre v-pre data-lang="json">
-        <code class="response">
-    {
-        "message": "User Email Account Successfully Changed",
-        "status": 202
-    }
-        </code>
-        </pre>
-            </li>
-        </ul>
-
-        <!-- Change User Password -->
-        <h3 id="change-user-password"><a href="#change-user-password">Change User Password</a></h3>
-        <ul>
-            <li>
-                URL
-                <ul>
-                    <li>
-                        <code>/api/users/changeUserPassword</code>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                Method
-                <ul>
-                    <li>PUT</li>
-                </ul>
-            </li>
-            <li>
-                Headers
-                <ul>
-                    <li><code>Content-Type</code> : <code>application/json</code></li>
-                    <li><code>Authorization</code> : <code> Bearer &lt;token&gt;</code></li>
-                </ul>
-            </li>
-            <li>
-                Request Body (Raw JSON)
-                <ul>
-                    <li><code>currentPassword</code> as <code>string</code></li>
-                    <li><code>newPassword</code> as <code>string</code></li>
-                    <li><code>confirmPassword</code> as <code>string</code></li>
-                </ul>
-            </li>
-            <li>
-                Response
-                <pre v-pre data-lang="json">
-                <code class="response">
-    {
-        "message": "User Password Account Successfully Changed",
-        "status": 202
-    }
-                </code>
-                </pre>
-            </li>
-        </ul>
-
-        <!-- Delete User Account -->
-        <h3 id="delete-user-account"><a href="#delete-user-account">Delete User Account</a></h3>
-        <ul>
-            <li>
-                URL
-                <ul>
-                    <li>
-                        <code>/api/users/deleteUserAccount || /api/users/deleteUserAccount/:id</code>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                Method
-                <ul>
-                    <li>DELETE</li>
-                </ul>
-            </li>
-            <li>
-                Params
-                <ul>
-                    <li><code>key</code> : <code>id</code></li>
-                    <li><code>value</code> : <code>user id</code></li>
-                </ul>
-            </li>
-            <li>
-                Headers
-                <ul>
-                    <li><code>Authorization</code> : <code> Bearer &lt;token&gt;</code></li>
-                </ul>
-            </li>
-            <li>
-                Response
-                <pre v-pre data-lang="json">
-                <code class="response">
-    {
-        "message": "Delete User Account Successfully",
-        "status": 200
-    }
-                </code>
-                </pre>
             </li>
         </ul>
     </section>
