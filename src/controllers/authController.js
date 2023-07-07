@@ -145,9 +145,9 @@ const logOut = async (req, res) => {
                 });
             });
         } else {
-            res.status(401).send({
-                message: 'Already Log Out Account',
-                status: 401
+            res.status(403).send({
+                message: 'User is Not Sign In',
+                status: 403
             });
         }
     } catch (error) {
@@ -199,7 +199,7 @@ const verifyEmail = async (req, res) => {
             }
         } else {
             res.status(403).send({
-                message: 'Account is Not Sign In',
+                message: 'User is Not Sign In',
                 status: 403
             });
         }
@@ -331,6 +331,11 @@ const changeEmail = async (req, res) => {
                         });
                     }
                 });
+        } else {
+            res.status(403).send({
+                message: 'User is Not Sign In',
+                status: 403
+            });
         }
     } catch (error) {
         res.status(400).send({
@@ -418,7 +423,7 @@ const changePassword = async (req, res) => {
                 });
         } else {
             res.status(403).send({
-                message: 'Account is Not Sign In',
+                message: 'User is Not Sign In',
                 status: 403
             });
         }
