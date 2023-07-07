@@ -26,14 +26,15 @@ const signUp = async (req, res) => {
                 UsersCollection.doc(credential.user.uid).set({
                     id: credential.user.uid,
                     name: req.body.name,
-                    headline: req.body.headline || null,
+                    headline: req.body.headline || "Empty",
                     email: credential.user.email,
-                    location: req.body.location || null,
-                    status: 'Available',
-                    skills: req.body.skill || null,
+                    location: req.body.location || "Empty",
+                    status: "Available",
+                    skills: req.body.skill || "Empty",
                     userProfileImage: defaultUserProfile,
-                    about: req.body.about || null,
-                    createdAt: getDateAndTime
+                    about: req.body.about || "Empty",
+                    createdAt: getDateAndTime,
+                    updatedAt: "Hasn't Been Updated Yet"
                 });
             })
             .then(() => {
@@ -277,6 +278,17 @@ const changeEmail = async (req, res) => {
                                 message: 'Email Successfully Changed',
                                 status: 202
                             });
+                        })
+                        .then(() => {
+                            // Send Email Verification after Change Email
+                            if (user.emailVerified === false) {
+                                user.sendEmailVerification();
+                            } else {
+                                return res.status(400).send({
+                                    message: 'Email Already Verified',
+                                    status: 400
+                                });
+                            }
                         })
                         .catch((error) => {
                             if (error.code === 'auth/invalid-email') {
