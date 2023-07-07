@@ -43,7 +43,7 @@ const authenticate = async (req, res, next) => {
     }
 };
 
-const deleteUserProfileStorage = async (uid) => {
+const deleteProfileStorage = async (uid) => {
     try {
         const bucket = CloudStorage.bucket('buzz-wise-team.appspot.com');
 
@@ -66,7 +66,7 @@ const deleteUserProfileStorage = async (uid) => {
 };
 
 // Delete user account from authentication and firestore
-const deleteUserAccount = async (req, res, firebase, collection) => {
+const deleteAccount = async (req, res, firebase, collection) => {
     const user = firebase.auth().currentUser;
 
     if (user && req.user.uid) {
@@ -76,30 +76,30 @@ const deleteUserAccount = async (req, res, firebase, collection) => {
                 collection.doc(user.uid).delete();
 
                 // Delete the user's account profile from storage
-                deleteUserProfileStorage(user.uid || req.user.uid);
+                deleteProfileStorage(user.uid || req.user.uid);
             })
             .then(() => res.status(200)
                 .send({
-                    message: 'Delete User Account Successfully',
+                    message: 'Successfully Deleted Account',
                     status: 200
                 }));
     } else {
         res.status(403).send({
-            message: 'User is Not Sign In',
+            message: 'Account is Not Sign In',
             status: 403
         });
     }
 };
 
 // Delete user account from authentication and firestore by id (Only For Testing)
-const deleteUserAccountByID = async (req, res, firebase, collection) => {
+const deleteAccountByID = async (req, res, firebase, collection) => {
     const userID = req.params.id;
     const user = await collection.doc(userID);
     const profile = await user.get();
 
     if (!profile.exists) {
         res.status(404).send({
-            message: 'User is Not Found',
+            message: 'Account is Not Found',
             status: 404
         });
     } else {
@@ -110,13 +110,13 @@ const deleteUserAccountByID = async (req, res, firebase, collection) => {
         await collection.doc(userID).delete();
 
         // Delete the user's account profile from storage
-        await deleteUserProfileStorage(userID);
+        await deleteProfileStorage(userID);
 
         res.status(200).send({
-            message: 'Delete User Account Successfully',
+            message: 'Successfully Deleted Account',
             status: 200
         });
     }
 };
 
-module.exports = { authenticate, deleteUserAccount, deleteUserAccountByID };
+module.exports = { authenticate, deleteAccount, deleteAccountByID };

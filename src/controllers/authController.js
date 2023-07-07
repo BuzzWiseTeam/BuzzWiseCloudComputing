@@ -52,14 +52,14 @@ const signUp = async (req, res) => {
                     user.sendEmailVerification();
                 } else {
                     return res.status(400).send({
-                        message: 'User Email Already Verified',
+                        message: 'Email Already Verified',
                         status: 400
                     });
                 }
             })
             .then((data) => res.status(201)
                 .send({
-                    message: 'User Successfully Sign Up Account',
+                    message: 'Successfully Sign Up Account',
                     status: 201,
                     data
                 }))
@@ -78,7 +78,7 @@ const signUp = async (req, res) => {
             });
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Sign Up User Account',
+            message: 'Something Went Wrong to Sign Up Account',
             status: 400,
             error: error.message
         });
@@ -99,7 +99,7 @@ const signIn = async (req, res) => {
         await firebaseApp.auth().signInWithEmailAndPassword(email, password)
             .then((data) => res.status(200)
                 .send({
-                    message: 'User Successfully Sign In Account',
+                    message: 'Successfully Sign In Account',
                     status: 200,
                     data
                 }))
@@ -125,7 +125,7 @@ const signIn = async (req, res) => {
             });
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Sign In User Account',
+            message: 'Something Went Wrong to Sign In Account',
             status: 400,
             error: error.message
         });
@@ -139,26 +139,26 @@ const logOut = async (req, res) => {
         if (user && req.user.uid) {
             await firebaseApp.auth().signOut().then(() => {
                 res.status(200).send({
-                    message: 'User Log Out Successfully',
+                    message: 'Successfully Log Out Account',
                     status: 200
                 });
             });
         } else {
             res.status(401).send({
-                message: 'User is already Log Out',
+                message: 'Already Log Out Account',
                 status: 401
             });
         }
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Log Out User Account',
+            message: 'Something Went Wrong to Log Out Account',
             status: 400,
             error: error.message
         });
     }
 };
 
-const verifyUserEmail = async (req, res) => {
+const verifyEmail = async (req, res) => {
     try {
         const user = firebaseApp.auth().currentUser;
 
@@ -186,32 +186,32 @@ const verifyUserEmail = async (req, res) => {
                         });
                 } else {
                     return res.status(400).send({
-                        message: 'User Email Already Verified',
+                        message: 'Email Already Verified',
                         status: 400
                     });
                 }
             } else {
                 res.status(400).send({
-                    message: 'User Email is Not Found',
+                    message: 'Email is Not Found',
                     status: 400
                 });
             }
         } else {
             res.status(403).send({
-                message: 'User is Not Sign In',
+                message: 'Account is Not Sign In',
                 status: 403
             });
         }
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Verify User Email Account',
+            message: 'Something Went Wrong to Verify Email Account',
             status: 400,
             error: error.message
         });
     }
 };
 
-const forgotUserPassword = async (req, res) => {
+const forgotPassword = async (req, res) => {
     try {
         if (!req.body.email) {
             return res.status(422).json({
@@ -243,14 +243,14 @@ const forgotUserPassword = async (req, res) => {
             });
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Forgot User Account Password',
+            message: 'Something Went Wrong to Forgot Account Password',
             status: 400,
             error: error.message
         });
     }
 };
 
-const changeUserEmail = async (req, res) => {
+const changeEmail = async (req, res) => {
     try {
         const user = firebaseApp.auth().currentUser;
 
@@ -274,7 +274,7 @@ const changeUserEmail = async (req, res) => {
                     user.updateEmail(newEmail)
                         .then(() => {
                             res.status(202).send({
-                                message: 'User Email Account Successfully Changed',
+                                message: 'Email Successfully Changed',
                                 status: 202
                             });
                         })
@@ -322,14 +322,14 @@ const changeUserEmail = async (req, res) => {
         }
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Change User Email Account',
+            message: 'Something Went Wrong to Change Email Account',
             status: 400,
             error: error.message
         });
     }
 };
 
-const changeUserPassword = async (req, res) => {
+const changePassword = async (req, res) => {
     try {
         const user = firebaseApp.auth().currentUser;
 
@@ -360,7 +360,7 @@ const changeUserPassword = async (req, res) => {
                     user.updatePassword(newPassword)
                         .then(() => {
                             res.status(202).send({
-                                message: 'User Password Account Successfully Changed',
+                                message: 'Password Successfully Changed',
                                 status: 202
                             });
                         })
@@ -389,7 +389,7 @@ const changeUserPassword = async (req, res) => {
                         });
                     } else {
                         return res.status(500).send({
-                            message: 'Something Went Wrong to Change User Password Account',
+                            message: 'Invalid Authenticate Credential',
                             status: 500,
                             error: error.message
                         });
@@ -397,39 +397,39 @@ const changeUserPassword = async (req, res) => {
                 });
         } else {
             res.status(403).send({
-                message: 'User is Not Sign In',
+                message: 'Account is Not Sign In',
                 status: 403
             });
         }
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Change User Password Account',
+            message: 'Something Went Wrong to Change Password Account',
             status: 400,
             error: error.message
         });
     }
 };
 
-// Delete user account from authentication and firestore
-const deleteUserAccount = async (req, res) => {
+// Delete account from authentication and firestore
+const deleteAccount = async (req, res) => {
     try {
-        AuthModel.deleteUserAccount(req, res, firebaseApp, UsersCollection);
+        AuthModel.deleteAccount(req, res, firebaseApp, UsersCollection);
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Delete User Account',
+            message: 'Something Went Wrong to Delete Account',
             status: 400,
             error: error.message
         });
     }
 };
 
-// Delete user account from authentication and firestore by id (Only for Testing)
-const deleteUserAccountByID = async (req, res) => {
+// Delete account from authentication and firestore by id (Only for Testing)
+const deleteAccountByID = async (req, res) => {
     try {
-        AuthModel.deleteUserAccountByID(req, res, firebaseApp, UsersCollection);
+        AuthModel.deleteAccountByID(req, res, firebaseApp, UsersCollection);
     } catch (error) {
         res.status(400).send({
-            message: 'Something Went Wrong to Delete User Account',
+            message: 'Something Went Wrong to Delete Account',
             status: 400,
             error: error.message
         });
@@ -437,6 +437,6 @@ const deleteUserAccountByID = async (req, res) => {
 };
 
 module.exports = {
-    signUp, signIn, logOut, verifyUserEmail, forgotUserPassword, changeUserEmail,
-    changeUserPassword, deleteUserAccount, deleteUserAccountByID
+    signUp, signIn, logOut, verifyEmail, forgotPassword, changeEmail,
+    changePassword, deleteAccount, deleteAccountByID
 };

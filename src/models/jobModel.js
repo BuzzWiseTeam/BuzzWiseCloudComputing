@@ -9,7 +9,7 @@ const getAllJobs = async (req, res, collection) => {
         // Check if the jobs is empty
         if (jobs.length !== 0) {
             res.status(200).send({
-                message: 'Display All Jobs Listing',
+                message: 'All Jobs Listing',
                 status: 200,
                 total: snapshot.data().count,
                 data: jobs
@@ -34,7 +34,7 @@ const getJobDetail = async (req, res, collection) => {
         });
     } else {
         res.status(200).send({
-            message: 'Display Job Detail',
+            message: 'Job Detail',
             status: 200,
             data: job.data()
         });

@@ -101,273 +101,9 @@
         <p><a href="https://buzzwisebackend-fu5dz3fuxq-uc.a.run.app">https://buzzwisebackend-fu5dz3fuxq-uc.a.run.app</a>
         </p>
 
-        <h2 class="jobs-title">Jobs</h2>
-
-        <!-- Add Job -->
-        <h3 id="add-job"><a href="#add-job">Add Job</a></h3>
-        <ul>
-            <li>
-                URL
-                <ul>
-                    <li>
-                        <code>/api/jobs/addJob</code>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                Method
-                <ul>
-                    <li>POST</li>
-                </ul>
-            </li>
-            <li>
-                Headers
-                <ul>
-                    <li><code>Content-Type</code> : <code>multipart/form-data</code></li>
-                </ul>
-            </li>
-            <li>
-                Request Body (Form-Data)
-                <ul>
-                    <li><code>title</code> as <code>text</code></li>
-                    <li><code>companyName</code> as <code>text</code></li>
-                    <li><code>location</code> as <code>text</code></li>
-                    <li><code>email</code> as <code>text</code></li>
-                    <li><code>jobType</code> as <code>text</code></li>
-                    <li><code>requiredSkills</code> as <code>text</code></li>
-                    <li><code>jobDescription</code> as <code>text</code></li>
-                    <li><code>companyProfileImage</code> as <code>file</code></li>
-                </ul>
-            </li>
-            <li>
-                Response
-                <pre v-pre data-lang="json">
-        <code class="response">
-    {
-        "message": "Successfully Added Job",
-        "status": 201,
-        "data": {
-            "id": "yNuNFkdGjZP2NgN1",
-            "title": "AC Service",
-            "companyName": "Samsung Service Center",
-            "location": "Jakarta, Indonesia",
-            "email": "servicecenter@samsung.id",
-            "jobType: "Full-time",
-            "requiredSkills: "AC Repair",
-            "jobDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-            "createdAt": "6/9/2023|11:17:50 AM",
-            "companyProfileImage": "URL"
-        }
-    }
-        </code>
-        </pre>
-            </li>
-        </ul>
-
-        <!-- Display All Jobs Listing -->
-        <h3 id="all-jobs"><a href="#all-jobs">Display All Jobs Listing</a></h3>
-        <ul>
-            <li>
-                URL
-                <ul>
-                    <li>
-                        <code>/api/jobs/allJobs</code>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                Method
-                <ul>
-                    <li>GET</li>
-                </ul>
-            </li>
-            <li>
-                Response
-                <pre v-pre data-lang="json">
-        <code class="response">
-    {
-        "message": "Display All Jobs Listing",
-        "status": 200,
-        "total": 100,
-        "data": [
-            {
-                "createdAt": "6/7/2023|3:13:17 PM",
-                "companyProfileImage": "URL",
-                "companyName": "Samsung Service Center",
-                "jobDescription": "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-                "location": "Jakarta, Indonesia",
-                "requiredSkills": "AC Repair",
-                "id": "4mWPCWQmDkU4nczUFgrc",
-                "jobType": "Full-Time",
-                "title": "AC Service",
-                "email": "servicecenter@samsung.id"
-            },
-            ...
-        ]
-    }
-        </code>
-        </pre>
-            </li>
-        </ul>
-
-        <!-- Display Job Detail -->
-        <h3 id="job"><a href="#job">Display Job Detail</a></h3>
-        <ul>
-            <li>
-                URL
-                <ul>
-                    <li>
-                        <code>/api/jobs/job/:id</code>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                Method
-                <ul>
-                    <li>GET</li>
-                </ul>
-            </li>
-            <li>
-                Params
-                <ul>
-                    <li><code>key</code> : <code>id</code></li>
-                    <li><code>value</code> : <code>job id</code></li>
-                </ul>
-            </li>
-            <li>
-                Response
-                <pre v-pre data-lang="json">
-        <code class="response">
-    {
-        "message": "Display Job Detail",
-        "status": 200,
-        "data": {
-            "createdAt": "6/9/2023|11:17:50 AM",
-            "companyProfileImage": "URL",
-            "companyName": "Samsung Service Center",
-            "jobDescription": "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-            "location": "Jakarta, Indonesia",
-            "requiredSkills": "AC Repair, Troubleshooting",
-            "id": "oGbB1tZ9XQ2JHH6vHwDI",
-            "jobType": "Full-Time",
-            "title": "AC Service",
-            "email": "servicecenter@samsung.id"
-           }
-    }
-        </code>
-        </pre>
-            </li>
-        </ul>
-
-        <!-- Update Job -->
-        <h3 id="update-job"><a href="#update-job">Update Job</a></h3>
-        <ul>
-            <li>
-                URL
-                <ul>
-                    <li>
-                        <code>/api/jobs/updateJob/:id</code>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                Method
-                <ul>
-                    <li>PUT</li>
-                </ul>
-            </li>
-            <li>
-                Params
-                <ul>
-                    <li><code>key</code> : <code>id</code></li>
-                    <li><code>value</code> : <code>job id</code></li>
-                </ul>
-            </li>
-            <li>
-                Headers
-                <ul>
-                    <li><code>Content-Type</code> : <code>multipart/form-data</code></li>
-                </ul>
-            </li>
-            <li>
-                Request Body (Form-Data)
-                <ul>
-                    <li><code>title</code> as <code>text</code></li>
-                    <li><code>companyName</code> as <code>text</code></li>
-                    <li><code>location</code> as <code>text</code></li>
-                    <li><code>email</code> as <code>text</code></li>
-                    <li><code>jobType</code> as <code>text</code></li>
-                    <li><code>requiredSkills</code> as <code>text</code></li>
-                    <li><code>jobDescription</code> as <code>text</code></li>
-                    <li><code>companyProfileImage</code> as <code>file</code></li>
-                </ul>
-            </li>
-            <li>
-                Response
-                <pre v-pre data-lang="json">
-                <code class="response">
-    {
-        "message": "Update Job Successfully",
-        "status": 202,
-        "data": {
-            "id": "yNuNFkdGjZP2NgN1",
-            "title": "AC Service",
-            "companyName": "Samsung Service Center",
-            "location": "Samarinda, Indonesia",
-            "email": "servicecenter@samsung.id",
-            "jobType: "Part-time",
-            "requiredSkills: "AC Repair, Troubleshooting",
-            "jobDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-            "createdAt": "6/9/2023|11:17:50 AM",
-            "updatedAt": "11/9/2023|8:17:50 AM",
-            "companyProfileImage": "URL"
-        }
-    }
-                </code>
-                </pre>
-            </li>
-        </ul>
-
-        <!-- Delete Job -->
-        <h3 id="delete"><a href="#delete">Delete Job</a></h3>
-        <ul>
-            <li>
-                URL
-                <ul>
-                    <li>
-                        <code>/api/jobs/deleteJob/:id</code>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                Method
-                <ul>
-                    <li>DELETE</li>
-                </ul>
-            </li>
-            <li>
-                Params
-                <ul>
-                    <li><code>key</code> : <code>id</code></li>
-                    <li><code>value</code> : <code>job id</code></li>
-                </ul>
-            </li>
-            <li>
-                Response
-                <pre v-pre data-lang="json">
-        <code class="response">
-    {
-        "message": "Delete Job Successfully",
-        "status": 200
-    }
-        </code>
-        </pre>
-            </li>
-        </ul>
-
         <h2 class="auth-title">Auth</h2>
 
-        <!-- User Sign Up -->
+        <!-- Sign Up -->
         <h3 id="sign-up"><a href="#sign-up">Sign Up</a></h3>
         <ul>
             <li>
@@ -403,7 +139,7 @@
                 <pre v-pre data-lang="json">
                 <code class="response">
             {
-                "message": "User Successfully Sign Up Account",
+                "message": "Successfully Sign Up Account",
                 "status": 201
             }
                 </code>
@@ -446,7 +182,7 @@
                 <pre v-pre data-lang="json">
                 <code class="response">
             {
-                "message": "User Successfully Sign In Account",
+                "message": "Successfully Sign In Account",
                 "status": 200,
                 "data": {
                     "user": {
@@ -491,7 +227,7 @@
                 <pre v-pre data-lang="json">
                 <code class="response">
             {
-                "message": "User Log Out Successfully",
+                "message": "Successfully Log Out Account",
                 "status": 200
             }
                 </code>
@@ -506,7 +242,7 @@
                 URL
                 <ul>
                     <li>
-                        <code>/api/auth/verifyUserEmail</code>
+                        <code>/api/auth/verifyEmail</code>
                     </li>
                 </ul>
             </li>
@@ -542,7 +278,7 @@
                 URL
                 <ul>
                     <li>
-                        <code>/api/auth/forgotUserPassword</code>
+                        <code>/api/auth/forgotPassword</code>
                     </li>
                 </ul>
             </li>
@@ -578,13 +314,13 @@
         </ul>
 
         <!-- Change User Email -->
-        <h3 id="change-user-email"><a href="#change-user-email">Change User Email</a></h3>
+        <h3 id="change-email"><a href="#change-email">Change Email</a></h3>
         <ul>
             <li>
                 URL
                 <ul>
                     <li>
-                        <code>/api/auth/changeUserEmail</code>
+                        <code>/api/auth/changeEmail</code>
                     </li>
                 </ul>
             </li>
@@ -613,7 +349,7 @@
                 <pre v-pre data-lang="json">
         <code class="response">
     {
-        "message": "User Email Account Successfully Changed",
+        "message": "Email Successfully Changed",
         "status": 202
     }
         </code>
@@ -622,13 +358,13 @@
         </ul>
 
         <!-- Change User Password -->
-        <h3 id="change-user-password"><a href="#change-user-password">Change User Password</a></h3>
+        <h3 id="change-password"><a href="#change-password">Change Password</a></h3>
         <ul>
             <li>
                 URL
                 <ul>
                     <li>
-                        <code>/api/auth/changeUserPassword</code>
+                        <code>/api/auth/changePassword</code>
                     </li>
                 </ul>
             </li>
@@ -658,7 +394,7 @@
                 <pre v-pre data-lang="json">
                 <code class="response">
     {
-        "message": "User Password Account Successfully Changed",
+        "message": "Password Successfully Changed",
         "status": 202
     }
                 </code>
@@ -667,13 +403,13 @@
         </ul>
 
         <!-- Delete User Account -->
-        <h3 id="delete-user-account"><a href="#delete-user-account">Delete User Account</a></h3>
+        <h3 id="delete-account"><a href="#delete-account">Delete Account</a></h3>
         <ul>
             <li>
                 URL
                 <ul>
                     <li>
-                        <code>/api/auth/deleteUserAccount || /api/auth/deleteUserAccount/:id <i>(Only For Testing)</i></code>
+                        <code>/api/auth/deleteAccount || /api/auth/deleteAccount/:id <i>(Only For Testing)</i></code>
                     </li>
                 </ul>
             </li>
@@ -701,7 +437,7 @@
                 <pre v-pre data-lang="json">
                 <code class="response">
     {
-        "message": "Delete User Account Successfully",
+        "message": "Successfully Deleted Account",
         "status": 200
     }
                 </code>
@@ -977,6 +713,270 @@
             "about": "Cras dapibus. Vivamus elementum semper nisi.",
             "updatedAt": "11/9/2023|8:17:50 AM"
         }
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+
+        <h2 class="jobs-title">Jobs</h2>
+
+        <!-- Add Job -->
+        <h3 id="add-job"><a href="#add-job">Add Job</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/jobs/addJob</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>POST</li>
+                </ul>
+            </li>
+            <li>
+                Headers
+                <ul>
+                    <li><code>Content-Type</code> : <code>multipart/form-data</code></li>
+                </ul>
+            </li>
+            <li>
+                Request Body (Form-Data)
+                <ul>
+                    <li><code>title</code> as <code>text</code></li>
+                    <li><code>companyName</code> as <code>text</code></li>
+                    <li><code>location</code> as <code>text</code></li>
+                    <li><code>email</code> as <code>text</code></li>
+                    <li><code>jobType</code> as <code>text</code></li>
+                    <li><code>requiredSkills</code> as <code>text</code></li>
+                    <li><code>jobDescription</code> as <code>text</code></li>
+                    <li><code>companyProfileImage</code> as <code>file</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre v-pre data-lang="json">
+        <code class="response">
+    {
+        "message": "Successfully Added Job",
+        "status": 201,
+        "data": {
+            "id": "yNuNFkdGjZP2NgN1",
+            "title": "AC Service",
+            "companyName": "Samsung Service Center",
+            "location": "Jakarta, Indonesia",
+            "email": "servicecenter@samsung.id",
+            "jobType: "Full-time",
+            "requiredSkills: "AC Repair",
+            "jobDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+            "createdAt": "6/9/2023|11:17:50 AM",
+            "companyProfileImage": "URL"
+        }
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+
+        <!-- Display All Jobs Listing -->
+        <h3 id="all-jobs"><a href="#all-jobs">Display All Jobs Listing</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/jobs/allJobs</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>GET</li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre v-pre data-lang="json">
+        <code class="response">
+    {
+        "message": "All Jobs Listing",
+        "status": 200,
+        "total": 100,
+        "data": [
+            {
+                "createdAt": "6/7/2023|3:13:17 PM",
+                "companyProfileImage": "URL",
+                "companyName": "Samsung Service Center",
+                "jobDescription": "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+                "location": "Jakarta, Indonesia",
+                "requiredSkills": "AC Repair",
+                "id": "4mWPCWQmDkU4nczUFgrc",
+                "jobType": "Full-Time",
+                "title": "AC Service",
+                "email": "servicecenter@samsung.id"
+            },
+            ...
+        ]
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+
+        <!-- Display Job Detail -->
+        <h3 id="job"><a href="#job">Display Job Detail</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/jobs/job/:id</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>GET</li>
+                </ul>
+            </li>
+            <li>
+                Params
+                <ul>
+                    <li><code>key</code> : <code>id</code></li>
+                    <li><code>value</code> : <code>job id</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre v-pre data-lang="json">
+        <code class="response">
+    {
+        "message": "Job Detail",
+        "status": 200,
+        "data": {
+            "createdAt": "6/9/2023|11:17:50 AM",
+            "companyProfileImage": "URL",
+            "companyName": "Samsung Service Center",
+            "jobDescription": "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+            "location": "Jakarta, Indonesia",
+            "requiredSkills": "AC Repair, Troubleshooting",
+            "id": "oGbB1tZ9XQ2JHH6vHwDI",
+            "jobType": "Full-Time",
+            "title": "AC Service",
+            "email": "servicecenter@samsung.id"
+           }
+    }
+        </code>
+        </pre>
+            </li>
+        </ul>
+
+        <!-- Update Job -->
+        <h3 id="update-job"><a href="#update-job">Update Job</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/jobs/updateJob/:id</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>PUT</li>
+                </ul>
+            </li>
+            <li>
+                Params
+                <ul>
+                    <li><code>key</code> : <code>id</code></li>
+                    <li><code>value</code> : <code>job id</code></li>
+                </ul>
+            </li>
+            <li>
+                Headers
+                <ul>
+                    <li><code>Content-Type</code> : <code>multipart/form-data</code></li>
+                </ul>
+            </li>
+            <li>
+                Request Body (Form-Data)
+                <ul>
+                    <li><code>title</code> as <code>text</code></li>
+                    <li><code>companyName</code> as <code>text</code></li>
+                    <li><code>location</code> as <code>text</code></li>
+                    <li><code>email</code> as <code>text</code></li>
+                    <li><code>jobType</code> as <code>text</code></li>
+                    <li><code>requiredSkills</code> as <code>text</code></li>
+                    <li><code>jobDescription</code> as <code>text</code></li>
+                    <li><code>companyProfileImage</code> as <code>file</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre v-pre data-lang="json">
+                <code class="response">
+    {
+        "message": "Update Job Successfully",
+        "status": 202,
+        "data": {
+            "id": "yNuNFkdGjZP2NgN1",
+            "title": "AC Service",
+            "companyName": "Samsung Service Center",
+            "location": "Samarinda, Indonesia",
+            "email": "servicecenter@samsung.id",
+            "jobType: "Part-time",
+            "requiredSkills: "AC Repair, Troubleshooting",
+            "jobDescription: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+            "createdAt": "6/9/2023|11:17:50 AM",
+            "updatedAt": "11/9/2023|8:17:50 AM",
+            "companyProfileImage": "URL"
+        }
+    }
+                </code>
+                </pre>
+            </li>
+        </ul>
+
+        <!-- Delete Job -->
+        <h3 id="delete"><a href="#delete">Delete Job</a></h3>
+        <ul>
+            <li>
+                URL
+                <ul>
+                    <li>
+                        <code>/api/jobs/deleteJob/:id</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Method
+                <ul>
+                    <li>DELETE</li>
+                </ul>
+            </li>
+            <li>
+                Params
+                <ul>
+                    <li><code>key</code> : <code>id</code></li>
+                    <li><code>value</code> : <code>job id</code></li>
+                </ul>
+            </li>
+            <li>
+                Response
+                <pre v-pre data-lang="json">
+        <code class="response">
+    {
+        "message": "Delete Job Successfully",
+        "status": 200
     }
         </code>
         </pre>
