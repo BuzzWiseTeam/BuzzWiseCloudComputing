@@ -1,7 +1,7 @@
 {
   "name": "buzzwisecloudcomputing",
   "version": "1.0.0",
-  "description": "Buzz Wise BackEnd App Services",
+  "description": "Buzz Wise BackEnd App Cloud Computing Services",
   "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js",
