@@ -12,16 +12,18 @@
 
 <h3>Node.js & NPM</h3>
 
-- Install all of the dependencies: `npm install`
-- Run the project: `npm run dev | npm run start | npm run test`
+- Install all of the dependencies: `npm run install`
+- Run in the Development server: `npm run dev`
+- Start the project: `npm run start`
+- Testing: `npm run test`
 
 <h3>Docker</h3>
 
-- Docker build: `sudo docker build -t buzz-wise-backend .`
-- Docker run container: `sudo docker run -it -p 8080:8080 --name=buzzwisebackend buzz-wise-backend`
-- Docker start: `sudo docker start buzzwisebackend`
-- Docker Stop: `sudo docker stop buzzwisebackend`
-- Docker remove: `sudo docker rm buzzwisebackend`
+- Docker build: `docker build -t buzz-wise-backend .`
+- Docker run container: `docker run -it -p 8080:8080 --name=buzzwisebackend buzz-wise-backend`
+- Docker start: `docker start buzzwisebackend`
+- Docker Stop: `docker stop buzzwisebackend`
+- Docker remove: `docker rm buzzwisebackend`
 
 <h3>Google Cloud Platform (GCP) Services</h3>
 
