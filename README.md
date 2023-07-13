@@ -1,10 +1,12 @@
 <h1 align="center">Buzz Wise Cloud Computing<h1>
 
-<h2>Databases</h2>
+<h2>Deployment</h2>
+
+<h3>Databases</h3>
 
 ![Databases](https://github.com/BuzzWiseTeam/BuzzWiseCloudComputing/blob/main/public/images/Database.png)
 
-<h2>BackEnd Services</h2>
+<h3>BackEnd Services</h3>
 
 ![BackEnd](https://github.com/BuzzWiseTeam/BuzzWiseCloudComputing/blob/main/public/images/BackEnd.png)
 
