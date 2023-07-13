@@ -4,15 +4,15 @@
 
 ![Databases](https://github.com/BuzzWiseTeam/BuzzWiseCloudComputing/blob/main/public/images/Database.png)
 
-<h2>Back-End Services</h2>
+<h2>BackEnd Services</h2>
 
-![Back-End](https://github.com/BuzzWiseTeam/BuzzWiseCloudComputing/blob/main/public/images/Back-End.png)
+![BackEnd](https://github.com/BuzzWiseTeam/BuzzWiseCloudComputing/blob/main/public/images/BackEnd.png)
 
 <h2>Setup & Installation</h2>
 
 <h3>Node.js & NPM</h3>
 
-- Install all of the dependencies: `npm run install`
+- Install all of the dependencies: `npm install`
 - Run in the Development server: `npm run dev`
 - Start the project: `npm run start`
 - Testing: `npm run test`
