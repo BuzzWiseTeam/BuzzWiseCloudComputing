@@ -13,7 +13,7 @@ const httpErrorResponse = (error, req, res, next) => {
     res.status(error.statusCode).json({
         message: 'Something Went Wrong With The Server, Please Try Again.',
         status: error.statusCode,
-        error: error.message,
+        error: error.message
     });
 };
 
